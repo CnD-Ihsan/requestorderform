@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers;
+//use App\Resources\Views\rof;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,15 +19,21 @@ Route::get('/', function () {
     return view('auth/login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth'])->name('dashboard');
 
-Route::get('/rof', [App\Http\Controllers\ROFController::class,'index'])->middleware(['auth'])->name('rof');
-Route::get('/show.{ref_no}', [App\Http\Controllers\ROFController::class,'show'])->middleware(['auth'])->name('showROF');
+//Index Route
+Route::get('/index', [App\Http\Controllers\ROFController::class,'index'])->middleware(['auth'])->name('indexROF');
 
-Route::post('/rof', [App\Http\Controllers\ROFController::class,'store'])->middleware(['auth'])->name('saveROF');
-Route::put('/rof', [App\Http\Controllers\ROFController::class,'update'])->middleware(['auth'])->name('updateROF');
+//Show Route
+Route::get('show/{form_ref_no}', [App\Http\Controllers\ROFController::class,'show'])->middleware(['auth'])->name('showROF');
+
+//Store Route
+Route::post('/index', [App\Http\Controllers\ROFController::class,'store'])->middleware(['auth'])->name('saveROF');
+
+//Update Route
+Route::put('/index/{form_ref_no}', [App\Http\Controllers\ROFController::class,'update'])->middleware(['auth'])->name('updateROF');
 //Route::resource('/rof', [App\Http\Controllers\ROFController::class,'index'])->middleware(['auth']);//->name('indexROF');
 
 Route::get('/add_new_user', function () {

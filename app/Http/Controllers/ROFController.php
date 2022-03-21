@@ -31,7 +31,7 @@ class ROFController extends Controller
             $daily_counter->save();
         }
 
-        return view('rof',[
+        return view(route('indexROF'),[
             'rofs' => $rofs, 
             'categories' => $categories,
             'user' => $user,
@@ -85,7 +85,7 @@ class ROFController extends Controller
             ]);
         }
 
-        return redirect('/rof')->with('message','Request Order successfully added.');
+        return redirect('rof/rof')->with('message','Request Order successfully added.');
     }
 
 }
