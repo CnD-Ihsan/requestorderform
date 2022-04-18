@@ -17,6 +17,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
     protected $fillable = [
         'name',
         'email',
@@ -25,6 +26,8 @@ class User extends Authenticatable
         'user_type',
         'isp',
     ];
+
+    protected $guarded = [ 'id' ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -53,3 +56,4 @@ class User extends Authenticatable
         return $this->dept;
     }
 }
+ 

@@ -16,19 +16,6 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
-                
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('add_new_user')" :active="request()->routeIs('add_new_user')">
-                        {{ __('Add new user') }}
-                    </x-nav-link>
-                </div>
-
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('rof')" :active="request()->routeIs('rof')">
-                        {{ __('Request order') }}
-                    </x-nav-link>
-                </div>
-
             </div>
 
             <!-- Settings Dropdown -->

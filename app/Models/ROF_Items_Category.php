@@ -9,6 +9,7 @@ class ROF_Items_Category extends Model
 {
     use HasFactory;
     protected $table = 'rof_items_categories';
+    protected $primaryKey = 'rof_item_category_id';
 
     public function rofItems(){
         return $this->belongsTo(ROF_Item::class);

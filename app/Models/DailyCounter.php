@@ -9,6 +9,8 @@ class DailyCounter extends Model
 {
     use HasFactory;
     protected $table = 'daily_counter';
+    protected $primaryKey = 'daily_counter_id';
+
     protected $attributes = [
         'current_date'=> '',
         'counter'=>0,

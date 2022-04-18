@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('daily_counter', function (Blueprint $table) {
             //Auto created columns via Laravel Breeze
-            $table->id();
+            $table->id('daily_counter');
             $table->string('current_date');
             $table->tinyInteger('counter');
         });

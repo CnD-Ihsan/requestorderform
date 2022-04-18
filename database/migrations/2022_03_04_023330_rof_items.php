@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('rof_items', function (Blueprint $table) {
-            $table->id();
+            $table->id('rof_item_id');
             $table->string('form_ref_no'); //Foreign key
             $table->tinyInteger('item_no');
             $table->string('link');

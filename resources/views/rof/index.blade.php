@@ -1,265 +1,325 @@
+
+<title>Request Order Form</title>
+@include('layouts.app')
 @if(session()->has('message'))
     <div class="alert alert-success">
-        <?php 
+        <?php
             $message = session()->get('message');
-            echo "<script> alert('$message'); </script>";
+            echo "
+                <script> alert('$message'); </script>
+            ";
         ?>
     </div>
 @endif
 
 <?php
-$jsonCategory = $categories->toJson();
-$limit=5; //Default ROFI limit.
-$date=date("d/m");
-$counter = $daily_counter['counter'];
-$counter++;
+$inputStyling = "column_filter mt-1 form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full";
 ?>
 
+<link href="{{ URL::asset('css/styles.css') }}" rel="stylesheet">
+<link href=" {{ URL::asset('css/app.css') }}" rel="stylesheet">
 <style>
 
 label{block font-medium text-sm text-gray-700}
 
+input:disabled {
+  /* background: #dddddd; */
+  border: 0;
+}
+
+td, th {
+    padding: 10px;
+    border:none;
+}
+
+.defaultButton {
+
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.contentButton {
+  background-color: #dc3535; /* Green */
+  border: 2px solid #dc3535;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.defaultOption {color:gray;}
+.otherOptions{color:black;}
 </style>
 
-<x-app-layout>
+<head>
+    <script>
+        var user = {!! auth()->user()->toJson() !!};
+    </script>
+</head>
+
+<html>
+<body>
+@include('sweetalert::alert')
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Request Order Form') }}
         </h2>
     </x-slot>
 
-    <!-- Request Order Form starts here -->
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <form method="POST" class="flex" action="{{ route('saveROF') }}">
-                        @csrf
-                        <div class="flex-initial">
+    <div class="mb-4" style="width:95%; margin: auto;">
+        <h2>Request Order Form</h2>
+    </div><br><br>
 
-                            <!-- Requested By -->
-                            <div class="mt-4">
-                                <x-label for="requested_by" :value="__('Requested by:')" />
-                                <x-label for="requested_by" :value="Auth::user()->name" />
-                                <x-input id="requested_by" type="hidden" name="requested_by" value='{{ Auth::user()->name }}' required autofocus />
-                            </div>
-                            <!-- Form reference no. -->
-                            <div class="mt-4">
-                                <x-label for="form_ref_no" :value="__('Form Ref. No.:')" />
-                                <x-label for="form_ref_no" :value="__('CTS/NTW/ROF/').$date.sprintf('-%03d', $counter)" />
-                                <x-input id="counter" type="hidden" name="counter" value='{{ $counter }}' required autofocus />
-                                <!--Check the value passed for the line below!!-->
-                                <x-input id="form_ref_no" class="block mt-1 w-40" type="hidden" name="form_ref_no" value="CTS/NTW/ROF/{{$date.sprintf('-%03d', $counter);}}" required autofocus />
-                            </div>
-                            <!-- Department -->
-                            <div class="mt-4">
-                                <x-label for="department" :value="__('Department:')" />
-                                <x-label for="department" :value="Auth::user()->dept" />
-                                <x-input id="department" class="block mt-1 w-40" type="hidden" name="department" value='{{ Auth::user()->dept }}' required autofocus />
-                            </div>
-                            <!-- Project -->
-                            <div class="flex mt-4">
-                                <x-label for="project" :value="__('Project:')"/><br>
-                            </div>
-                            <div class="flex mt-1">
-                                <x-input type="radio" id="transmission" name="project" value="transmission" required/>
-                                <x-label for="transmission" :value="__('Transmission')"/><br>
-                                <x-input type="radio" id="ftth" name="project" value="ftth"/>
-                                <x-label for="ftth" :value="__('Fiber to the Home')"/><br>
-                            </div>
-                            <!--Request Order Type-->
-                            <div class="mt-4">
-                                <x-label for="request_order_type" :value="__('Request Order Type')"/>
-                                <x-input type="text" class="mt-4" placeholder="Others" list="order_type" id="request_order_type" name="request_order_type"  required/>
-                                <datalist id="order_type">
-                                    <option value="New Project">
-                                    <option value="Desktop Survey">
-                                    <option value="Site Survey">
-                                </datalist>
-                            </div>
-                            <!-- Date -->
-                            <div class="mt-4">
-                                <x-label for="date" :value="__('Date: ').date('d/m/Y')" />
-                                <x-input hidden type="text" id="date" name="date" value="{{ date('d/m/Y') }}"/>
-                            </div>
-                            <!-- Time -->
-                            <div class="mt-4">
-                                <x-label for="time" :value="__('Time: ').date('H:i')" />
-                                <x-input hidden type="text" id="time" name="time" value="{{ date('H:i') }}"/>
-                            </div>
-                            <!-- Others -->
-                            <div class="mt-4">
-                                <x-label for="others" :value="__('Other details:')" />
-                                <x-input id="others" type="text" name="others" autofocus />
-
-                                <x-input id="approved_at" hidden type="text" name="approved_at" value="" autofocus />
-                                <x-input id="approved_by" hidden type="text" name="approved_by" value="" autofocus />
-                                <x-input id="received_by" hidden type="text" name="received_by" value="" autofocus />
-                                <x-input id="received_at" hidden type="text" name="received_at" value="" autofocus />
-                            </div>
-                        </div>
-
-                        <!--Request Order Items-->
-                        <div class="flex-auto pl-3 ml-3 mt-3">
-                            <x-label for="rofi" :value="__('Request Order Items:')" /><br>
-                            <table class="table-auto" id="rofi">
-                                <thead>
-                                    <tr>
-                                        <th><x-label class="w-6" for="rofi" :value="__('No.')" /></th>
-                                        <th><x-label for="rofi" :value="__('Item Ref. No.')" /></th> 
-                                        <th><x-label for="rofi" :value="__('Link')" /></th>
-                                        <th><x-label for="rofi" :value="__('Remarks')" /></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                @for ($i = 1; $i <= $limit; $i++)
-                                    <tr>
-                                        <td><x-label for="rofi_no" :value="__($i)"/></td>
-                                        <x-input for="rofi" id="item_no{{ $i }}" type="text" hidden name="item_no{{ $i }}" value="{{ $i }}"/>
-                                        <td><x-input for="rofi" disabled id="view_item_ref_no{{ $i }}" class="mt-1 w-40" type="text" name="view_item_ref_no{{ $i }}" autofocus /></td>
-                                        <x-input for="rofi" id="item_ref_no{{ $i }}" class="mt-1 w-40" type="hidden" name="item_ref_no{{ $i }}" autofocus />
-                                        <td><x-input for="rofi" id="link{{ $i }}" class="mt-1 w-40" type="text" name="link{{ $i }}" autofocus/></td>
-                                        <td>
-                                        <select onchange="setIRN(this.value, {{ $i }})" name='remarks{{ $i }}' id='remarks{{ $i }}' :value="old('remarks{{ $i }}')" class="mt-1 form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full">
-                                            <option selected value="blank"> 
-                                            </option>  
-                                            @foreach($categories as $category=>$value)
-                                                <option value="{{ $value['category'] }}"> 
-                                                {{ $value['category'] }}
-                                                </option>  
-                                            @endforeach 
-                                        </select>
-                                        </td>
-                                    </tr>
-                                @endfor
-                                <x-input id="indexNum" hidden type="text" name="indexNum" value="{{ $i }}" autofocus />
-                                </tbody>
-                            </table>    
-                            {{-- <x-button class="mt-4" name="add" id="dynamic-ar">Add Item</x-button> --}}
-                            <x-button class="mt-4 float-right" type="submit">Submit</x-button>
-                        </div>
-                        
-                    </form><br><br>
-                </div>
-                
+    <div class="row" style="width:90%; margin: auto;">
+        <div class="col-sm-2">
+            <div class="form-group" {{ auth()->user()->user_type == 'User' ? 'hidden' : '' }}>
+                <label>
+                    Requested By
+                </label>
+                <select id="requested_by_filter" :value="old('filter_name')" class="column_filter mt-1 form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full">
+                    <option selected value=""> 
+                    </option>  
+                    @foreach($users as $user)
+                        <option value="{{ $user['name'] }}"> 
+                        {{ $user['name'] }}
+                        </option>  
+                    @endforeach 
+                </select>
             </div>
         </div>
-    </div>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <table class="w-full center">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>Requested by</th>
-                                <th>Form Ref. No.</th> 
-                                <th>Department </th>
-                                <th>Project type </th>
-                                <th>Date</th>
-                                <th>Action </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php $no=0;?>
-                            @foreach($rofs as $rof)
-                            <tr>
-                                <td> {{ $rof_index = $total_rof - $rof['id'] + 1; }} </td>
-                                <td> {{ $rof['requested_by'] }} </td>
-                                <td> {{ $rof['form_ref_no'] }} </td>
-                                <td> {{ $rof->user()->value('dept'); }} </td>
-                                <td> {{ $rof['project_type'] }} </td>
-                                <td> {{ $rof['date'] }} </td>
-                                {{-- <td> <x-button onclick="window.location='{{ URL::route('showROF') }}'">See details</x-button><x-button>Approve</x-button> </td> --}}
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    {{ $rofs->links()  }}
-                </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label>
+                    Approval Status
+                </label>
+                <select id="status_filter" name="status_filter" class="column_filter {{ $inputStyling }}">
+                    <option selected value=""></option>  
+                    <option value="Approved">Approved</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
             </div>
         </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label>
+                    Request Order Type
+                </label>
+                <input type="text" placeholder="Others" list="order_type" id="order_type_filter" name="order_type_filter" class="column_filter  {{ $inputStyling }}" required/></input>
+                <datalist id="order_type">
+                    <option selected value=""></option>  
+                    <option value="New Project">New Project</option>
+                    <option value="Desktop Survey">Desktop Survey</option>
+                    <option value="Site Survey">Site Survey</option>
+                </datalist>  
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label>
+                    From
+                </label>
+                <input autocomplete="off" class="datepicker column_filter  {{ $inputStyling }}" type="text" id="from_filter" name="from_filter"></input>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label>
+                    To
+                </label>
+                <input autocomplete="off" class="datepicker  {{ $inputStyling }}" type="text" id="to_filter" name="to_filter"></input>
+            </div>
+        </div>
+                <button type="button" class="" style="width:8%; margin: auto;" onclick="clearFilter()" aria-label="Close" data-toggle="tooltip" data-placement="bottom" title="Clear Filter">Clear Filter</button>
     </div>
-</x-app-layout>
+
+    {{-- ROF Datatable --}}
+    <div class="card" style="width:95%; margin: auto;">
+        <div class="card-body">
+            <table id="rof-table" class="table display zero-configuration" >
+                <thead>
+                    <tr>
+                        <th>Requested by</th>
+                        <th>Form Ref. No.</th>
+                        <th>Department </th>
+                        <th>Request Order Type</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="m-4 pr-3"  {{ auth()->user()->user_type == 'HOD' ? 'hidden' : '' }}><a href="{{ route('createROF') }}" class="btn btn-primary float-right">New Request</a></div>
+</body>
+</html>
 
 <!-- Javascript -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript">
-    
-    const labelCount = [0,0,0];
-    const categoryA = "Network Improvement High Loss Aging Cable Protection Others (Existing Link)";
-    const categoryB = "ISP Enterprise Others (New Link)";
-    const categoryC = "BHP Local Authority Others (Relocation)";
-    let previousLabel = "0", previousIndex = 0, label;
 
-    //This var refers to the ROFI limit in line 3, used in add new row function
-    var i = 5; 
-    const jsonCategory = <?= $jsonCategory?>;
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />
 
-    //alert(jsonCategory);
-    //jsonCategory['category'].forEach(function(element){alert(element);})
 
-    var formAppend1 = '<tr><td><label class="mt-3" for="rofi_no">',
-        formAppend2 = '</label></td><td><input id="date" class="mt-1 w-40" type="text" name="date" required autofocus></td><td><input id="date" class="mt-1 w-40" type="text" name="date" required autofocus></td><td><select class="form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full">';
-        formAppend3 = '<option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option><option value="Network Improvement">Network Improvement</option></select></td></tr>';              
-        formAppend23 =formAppend2 + formAppend3;
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script src="https://cdn.datatables.net/datetime/1.1.2/js/dataTables.dateTime.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css">
 
-    //Below function adds new row of fields.
-    $("#dynamic-ar").click(function () {
-        ++i;
-        var targetDiv = document.getElementById('rofi');
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 
-        //$("#rofi").append('<tr><td><label for="rofi_no">' + i + '</label></td><td><input id="date" class="mt-1 w-40" type="text" name="date" required autofocus></td><td><input id="date" class="mt-1 w-40" type="text" name="date" required autofocus></td><td><select class="form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full"><option value="Network Improvement">Network Improvement</option></select></td></tr>');
-        $("#rofi").append(formAppend1, i, formAppend23);
+
+{{-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> --}}
+{{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script> --}}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+<script>
+
+let approveElement = document.getElementsByClassName("approve-button");
+
+    function clearFilter() {
+        document.getElementById("status_filter").value = "";
+        document.getElementById("order_type_filter").value = "";
+        document.getElementById("from_filter").value = "";
+        document.getElementById("to_filter").value = "";
+        location.reload();
+        return false;
+    }
+
+    $(document).on("keypress", "input", function(e){
+        if(e.which == 13){
+            var inputVal = $(this).val();
+            alert("You've entered: " + inputVal);
+        }
     });
-    
-    //Below function should remove additional row of fields.
-    $(document).on('click', '.remove-input-field', function () {
-        $(this).parents('tr').remove();
-    });
 
-    //This function automatically build Item Ref No and set it to ROF Item form 
-    function setIRN(val, itemIndex) { 
+    function approveROF(rofID) {
+        swal({
+            text: "Approve Request Order?",
+            icon: "info",
+            buttons: true,
+        })
+        .then((approve) => {
+            if (approve) {
+                var url = '{{ route("approveROF", ['rofID', 'action' => "approve"]) }}';
+                url = url.replace('rofID', rofID);
+                window.location.href=url;
+                
+            } else {
+                return false;
+            }
+        });  
+    }
+
+    function rejectROF(rofID) {
+        swal({
+            text: "Reject Request Order?",
+            icon: "warning",
+            buttons: true,
+        })
+        .then((reject) => {
+            if (reject) {
+                swal({
+                    text: "Remarks: ",
+                    content: "input",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((remarks) => {
+                    if (remarks !== null){
+                        var url = '{{ route("rejectROF", ['rofID', 'remarks' => "-remarks"]) }}';
+                        url = url.replace('rofID', rofID);
+                        url = url.replace('-remarks', remarks);
+
+                        window.location.href=url; 
+                    }
+                    else{
+                        swal('Request Order reject cancelled');
+                    }
+                })
+            } else {
+                return false;
+            }
+        });  
+    }
+
+    $(document).ready( function () {
+
+        load_table();
         
-        let itemRefNo, labelIndex;
-        let currentItemRefNo = document.getElementById('item_ref_no' + itemIndex).value;
-        let setRequired = document.getElementById('link' + itemIndex).value;
+        $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
 
-        if (currentItemRefNo != null || currentItemRefNo != undefined ){
-            if (currentItemRefNo.includes("A")) {
-                labelCount[0]--;
+        function load_table(fromDate = '', toDate = ''){
+            table = $('#rof-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('datatableROF') }}",
+                data: { 
+                    minDate : fromDate, 
+                    maxDate : toDate
+                }
+            },
+            columns: [
+                {data: 'requested_by', name: 'requested_by'},
+                {data: 'form_ref_no', name: 'form_ref_no'},
+                {data: 'user.dept', name: 'user.dept'},
+                {data: 'order_type', name: 'order_type'},
+                {data: 'date', name: 'date'},
+                {data: 'status', name: 'status'},
+                {data: 'action', name: 'action', orderable: false}
+            ],
+            language : {
+                emptyTable : "No order form request found."
             }
-            else if (currentItemRefNo.includes("B")) {
-                labelCount[1]--;
+            });
+            
+            if (user.user_type == 'User'){
+                table.columns(0).visible(false)
             }
-            else if (currentItemRefNo.includes("C")){
-                labelCount[2]--;
-            }                              
+
+            $('input.column_filter, #order_type_filter, select.column_filter').on('change', function() {
+                let filterType = $(this).attr('id').replace('_filter', '');
+                let filterValue = $(this).val();
+                
+                table.column(filterType+':name').search(filterValue).draw();
+            });
         }
 
-        if (categoryA.includes(val)) {
-            label = "A";
-            labelCount[0]++;
-            itemRefNo = label + ("-00" + labelCount[0]).slice (-4);
-        }
-        else if (categoryB.includes(val)) {
-            label = "B";
-            labelCount[1]++;
-            itemRefNo = label + ("-00" + labelCount[1]).slice (-4);
-        }
-        else if (categoryC.includes(val)) {
-            label = "C";
-            labelCount[2]++;
-            itemRefNo = label +  ("-00" + labelCount[2]).slice (-4);
-        } 
-        else {
-            itemRefNo = '';
-        }
+        $('#from_filter, #to_filter').on('change', function () {
+            minDate = $('#from_filter').datepicker().val();
+            maxDate = $('#to_filter').datepicker().val();
+            table.destroy();
+            load_table(minDate, maxDate);
+            table.draw();
+        });
+            
+     });
 
-        document.getElementById('view_item_ref_no' + itemIndex).value = itemRefNo;
-        document.getElementById('item_ref_no' + itemIndex).value = itemRefNo;
-    }   
+    var minDate, maxDate, table;   
+    
+
+
 </script>
+

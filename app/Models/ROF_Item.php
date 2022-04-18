@@ -10,6 +10,7 @@ class ROF_Item extends Model
     use HasFactory;
     public $timestamps = false;
     protected $table = 'rof_items';
+    protected $primaryKey = 'rof_item_id';
 
     protected $attributes = [
         'link'=>'',
@@ -29,7 +30,7 @@ class ROF_Item extends Model
         return $this->hasMany(ROF_Items_Category::class);
     }
 
-    public function user(){
-        return $this->belongsTo(ROF::class);
+    public function rof(){
+        return $this->belongsTo(ROF::class, 'form_ref_no');
     }
 }

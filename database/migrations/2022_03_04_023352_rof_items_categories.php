@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('rof_items_categories', function (Blueprint $table) {
-            $table->id();
+            $table->id('rof_item_category_id');
             $table->string('category'); //Highloss, network improvement, enterprise, etc2.
             $table->string('type'); //A. Existing Link, B. New Link, C. Relocation
         });

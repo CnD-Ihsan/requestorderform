@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('rof', function (Blueprint $table) {
             //Primary Keys
-            $table->id();
+            $table->id('rof_id');
             $table->string('form_ref_no');
             
             //Columns for users involved in the form
             $table->string('requested_by');
-            $table->string('approved_by');
-            $table->string('received_by');
+            $table->string('approved_by')->nullable();
+            $table->string('received_by')->nullable();
             
             //Columns for other details needed for the form
             $table->string('date');
@@ -31,6 +31,8 @@ return new class extends Migration
             $table->string('project_type');
             $table->string('others');
             $table->string('order_type'); 
+            $table->string('status'); 
+            $table->string('remarks');
         });
     }
 

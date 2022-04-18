@@ -164,7 +164,8 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
-
+        Yajra\DataTables\DataTablesServiceProvider::class,
+        
         /*
          * Package Service Providers...
          */
