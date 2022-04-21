@@ -135,68 +135,71 @@
                     <thead></thead>
                     <tbody>
                         <tr>
-                            <td class="no-bot-padding"><div class="font-weight-bold">Request Order Type</div></td>
-                            <td class="no-bot-padding"><div class="font-weight-bold">Status</div></td>
+                            <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">Request Order Type</div></td>
+                            <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">Status</div></td>
                         </tr>
                         <tr>
-                            <td class="no-top-padding"><div>{{ $details['order_type'] }}</div></td>
-                            <td class="no-top-padding"><div>{{ $details['status'] }}</div></td>
+                            <td colspan="2" class="no-top-padding"><div>{{ $details['order_type'] }}</div></td>
+                            <td colspan="2" class="no-top-padding"><div>{{ $details['status'] }}</div></td>
+                        </tr>
+                        <tr><td colspan="4" class="no-bot-padding"><div class="font-weight-bold">Requested by</div></td></tr>
+                        <tr><td colspan="4" class="no-bot-padding"><div><img src="{{ asset('img/signature.png') }}"  style="width:256px;height:72px;"></div></td></tr>
+
+                        <tr>
+                            <td class="no-bot-padding"><div class="font-weight-bold">Name </div></td>
+                            <td colspan="3" class="no-bot-padding"><div>: {{ $details['requested_by'] }}</div></td>
                         </tr>
                         <tr>
-                            <td class="no-bot-padding"><div class="font-weight-bold">{{ ($details['status'] == "Rejected") ? "Rejected" : "Approved" }} by</div></td>
-                            <td class="no-bot-padding"><div class="font-weight-bold">Received by</div></td>
+                            <td class="no-top-padding"><div class="font-weight-bold">Date </div></td>
+                            <td colspan="3" class="no-top-padding"><div>: {{ $details['date'] }}</div></td>
                         </tr>
                         <tr>
-                            <td class="no-top-padding"><div>{{ $details['approved_by'] }} </div></td>
-                            <td class="no-top-padding"><div>(Placeholder)</div></td>
+                            <td colspan="4"><hr></td>
                         </tr>
                         <tr>
-                            <td class="no-bot-padding"><div class="font-weight-bold">{{ ($details['status'] == "Rejected") ? "Rejection" : "Approval" }} date</div></td>
-                            <td class="no-bot-padding"><div class="font-weight-bold">Receipt date</div></td>
+                            <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">{{ ($details['status'] == "Rejected") ? "Rejected" : "Approved" }} by</div></td>
+                            <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">Received by</div></td>
                         </tr>
                         <tr>
-                            <td class="no-top-padding"><div>{{ $details['approved_at'] }} </div></td>
-                            <td class="no-top-padding"><div>(Placeholder)</div></td>
+                            <td colspan="2"><div><img src="{{ asset('img/signature (1).png') }}"  style="width:256px;height:72px;"></div></td>
+                            <td colspan="2"><div><img src="{{ asset('img/signature (2).png') }}"  style="width:256px;height:72px;"></div></td>
                         </tr>
                         <tr>
-                            <td colspan=2 class=""><div class="font-weight-bold">Remarks: </div></td>
+                            <td class="no-bot-padding"><div class="font-weight-bold">Name </div></td>
+                            <td class="no-bot-padding"><div>: {{ $details['approved_by'] }} Approver Name</div></td>
+                            <td class="no-bot-padding"><div class="font-weight-bold">Name </div></td>
+                            <td class="no-bot-padding"><div>: (Contractor Name)) </div></td>
                         </tr>
                         <tr>
-                            <td colspan=2 class="no-top-padding"><div>{{ $details['remarks'] }}</div></td>
+                            <td class="no-top-padding"><div class="font-weight-bold">Date </div></td>
+                            <td class="no-top-padding"><div>: Approved date {{ $details['approved_at'] }} </div></td>
+                            <td class="no-top-padding"><div class="font-weight-bold">Date</div></td>
+                            <td class="no-top-padding"><div>: Received by </div></td>
+                        </tr>
+                        <tr {{ $details['status'] == "Rejected" ? "" : "hidden"; }}>
+                            <td colspan=4 class=""><div class="font-weight-bold">Remarks: </div></td>
+                        </tr>
+                        <tr>
+                            <td colspan=4 class="no-top-padding"><div>{{ $details['remarks'] }}</div></td>
                         </tr>
                     </tbody>
                 </table>
 
-                {{-- <div class="row pt-4">
-                    <div class="col col-3"><b>Request Order Type</b></div>
-                </div>
-                <div class="row pb-4">
-                    <div class="col">{{ $details['order_type'] }}</div>
-                </div> --}}
-
-                {{-- <div class="row pt-2">
-                    <div class="col"><b>{{ ($details['status'] == "Rejected") ? "Rejected" : "Approved" }} by</b></div>
-                    <div class="col"><b>Received by</b></div>
-                </div>
-                <div class="row">
-                    <div class="col">{{ $details['approved_by'] }} </div>
-                    <div class="col">(Placeholder)</div>
-                </div>
-                <div class="row">    
-                    <div class="col pt-3"><b>{{ ($details['status'] == "Rejected") ? "Rejection" : "Approval" }} date</b></div>
-                    <div class="col pt-3"><b>Receipt date</b></div>
-                </div>
-                <div class="row">
-                    <div class="col">{{ $details['approved_at'] }} </div>
-                    <div class="col">(Placeholder)</div>
-                </div> --}}
-
                 <div class="row pt-5">
                     <div class="col">
-                        <button type="button" onclick="window.location='{{ route('updateROF', [$details['rof_id'], 'approve']); }}'" class="btn btn-success {{ (Auth::user()->user_type != 'HOD' || $details['approved_by'] != null) ? 'hidden' : ''; }}">Approve</button>
+                        {{-- <button type="button" onclick="window.location='{{ route('updateROF', [$details['rof_id'], 'approve']); }}'" class="btn btn-success {{ (Auth::user()->user_type != 'HOD' || $details['approved_by'] != null) ? 'hidden' : ''; }}">Approve</button> --}}
+                        @if (auth()->user()->user_type == "HOD")
+                            <button onclick="approveROF({{ $rofs->rof_id }})" class="approve-button btn btn-success m-1">Approve</button>
+                            <button onclick="rejectROF({{ $rofs->rof_id }})" class="reject-button btn btn-danger m-1">Reject</button>
+                        @endif
+
                         <button type="button" onclick="window.location='{{ route('toPDF', [$details['rof_id']]); }}'" class="btn btn-danger">Save as PDF</button>
-                        <button type="button" onclick="history.back()" class="btn btn-secondary">Back</button>
                         
+                        @if ($details['status'] == "Pending")
+                            <a id="edit_{{ $details->rof_id }}" href="{{ route('editROF', [$details['rof_id']]); }}" class="btn btn-warning m-1">Edit Details</a>
+                        @endif
+
+                        <button type="button" onclick="history.back()" class="btn btn-secondary">Back</button>
                     </div>
                 </div>
             </div>

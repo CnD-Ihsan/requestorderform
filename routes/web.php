@@ -18,7 +18,7 @@ use App\Http\Controllers;
 Route::get('/rof', function () {
 
     if(auth()->check()){
-        return view('rof/index');
+        return redirect()->route('indexROF');
     }
     else{
         return view('auth/login');
@@ -54,6 +54,8 @@ Route::post('rof/create', [App\Http\Controllers\ROFController::class,'store'])->
 
 //Update Route
 Route::get('rof/update/{rof_id}', [App\Http\Controllers\ROFController::class,'update'])->middleware(['auth'])->name('updateROF');
+
+Route::get('rof/edit/{rof_id}', [App\Http\Controllers\ROFController::class,'edit'])->middleware(['auth'])->name('editROF');
 
 Route::get('rof/approve/{rof_id}', [App\Http\Controllers\ROFController::class,'approve_rof'])->middleware(['auth'])->name('approveROF');
 Route::get('rof/reject/{rof_id}', [App\Http\Controllers\ROFController::class,'reject_rof'])->middleware(['auth'])->name('rejectROF');

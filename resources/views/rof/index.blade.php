@@ -84,8 +84,8 @@ td, th {
     </div><br><br>
 
     <div class="row" style="width:90%; margin: auto;">
-        <div class="col-sm-2">
-            <div class="form-group" {{ auth()->user()->user_type == 'User' ? 'hidden' : '' }}>
+        <div class="col-sm-2" {{ auth()->user()->user_type == 'User' ? 'hidden' : '' }}>
+            <div class="form-group">
                 <label>
                     Requested By
                 </label>
@@ -130,6 +130,30 @@ td, th {
         <div class="col-sm-2">
             <div class="form-group">
                 <label>
+                    Order Content
+                </label>
+                <select id="order_content_filter" name="order_content_filter" class="column_filter {{ $inputStyling }}">
+                    <option selected value="blank"> 
+                    </option>  
+                    @foreach($categories as $category)
+                        @if ($category['category'] == "High Loss" || $category['category'] == "ISP" || $category['category'] == "BHP")
+                            <optgroup label="{{ $category['type'] }}"> 
+                        @endif
+
+                        <option value="{{ $category['category'] }}"> 
+                        {{ $category['category'] }}
+                        </option>  
+
+                        @if ($category['category'] == "Others (Network Improvement)" || $category['category'] == "Others (New Link)" || $category['category'] == "Others (Relocation)")
+                            </optgroup> 
+                        @endif
+                    @endforeach 
+                </select>  
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label>
                     From
                 </label>
                 <input autocomplete="off" class="datepicker column_filter  {{ $inputStyling }}" type="text" id="from_filter" name="from_filter"></input>
@@ -143,7 +167,7 @@ td, th {
                 <input autocomplete="off" class="datepicker  {{ $inputStyling }}" type="text" id="to_filter" name="to_filter"></input>
             </div>
         </div>
-                <button type="button" class="" style="width:8%; margin: auto;" onclick="clearFilter()" aria-label="Close" data-toggle="tooltip" data-placement="bottom" title="Clear Filter">Clear Filter</button>
+                <button type="button" class="btn btn-info mb-3" style="width:8%; margin: auto;" onclick="clearFilter()" aria-label="Clear Filter" data-toggle="tooltip" data-placement="bottom" title="Clear Filter">Clear Filter</button>
     </div>
 
     {{-- ROF Datatable --}}

@@ -44,12 +44,9 @@ class ROFController extends Controller
 
         $total_rof = ROF::all()->count();        
         $users = User::where('user_type','=','User')->get();
+        $categories = ROF_Items_Category::all();
 
-        return view('rof/index',[
-            'rofs' => $rofs, 
-            'total_rof' => $total_rof,
-            'users' => $users,
-        ]);
+        return view('rof/index', compact("rofs", "total_rof", "users", "categories"));
 
     }
 
@@ -58,6 +55,13 @@ class ROFController extends Controller
         return view('rof/show',[
             'details'=> $details,
     ]);
+    }
+
+    public function edit($rof_id){
+        $details = ROF::with('rofItems')->find($rof_id);
+        $categories = ROF_Items_Category::all();
+
+        return view('rof/edit',compact("details", "categories"));
     }
 
     public function update($rof_id, $action){
@@ -108,20 +112,23 @@ class ROFController extends Controller
         ]);
         
         $labelCounter = [0,0,0];
+        $item_no = 0;
+
         for($i = 1; $i <= $request->indexNum; $i++){
   
             $remarks = "remarks" . (string)$i;
-            $item_no = "item_no" . (string)$i;
+            if($request->$remarks==null)
+                break;
+            if ($request->$remarks=='blank')
+                continue;
             $link = "link" . (string)$i;   
 
-            if($request->$remarks==null || $request->$remarks=='blank')
-                break;
-
             $link_ref_no = (new ROF_ItemsController)->linkRefNoBuilder($request->$remarks, $labelCounter);
+            $item_no++;
 
             $rofi = ROF_Item::create([
                 'form_ref_no' => $request->form_ref_no,
-                'item_no' => $request->$item_no,
+                'item_no' => $item_no,
                 'item_ref_no' => $link_ref_no,
                 'link' => $request->$link,
                 'category' => $request->$remarks,
@@ -175,8 +182,7 @@ class ROFController extends Controller
                             $button .= '<button onclick="rejectROF('.$rofs->rof_id.')" class="reject-button btn btn-danger m-1">Reject</button>';         
                         }
                     } 
-                   
-                   
+                      
                     return $button;
                 })
   

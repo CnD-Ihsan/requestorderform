@@ -4,8 +4,6 @@
 $jsonCategory = $categories->toJson();
 $i=1; //Item counter
 $date=date("d/m");
-$counter = $daily_counter['counter'];
-$counter++;
 
 $inputStyling = "mt-1 form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full";
 ?>
@@ -54,47 +52,40 @@ th {
                                     <x-input id="requested_by" type="hidden" name="requested_by" value='{{ Auth::user()->name }}' required autofocus />
                                 </td>
                                 <td><x-label style="font-weight: bold;" for="form_ref_no" :value="__('Form Ref. No.')" /></td>
-                                <td><x-label for="form_ref_no" :value="__(': CTS/NTW/ROF/').$date.sprintf('-%03d', $counter)" /></td>
-                                <x-input id="counter" type="hidden" name="counter" value='{{ $counter }}' required autofocus />
-                                <!--Check the value passed for the line below!!-->
-                                <x-input id="form_ref_no" class="block mt-1 w-40" type="hidden" name="form_ref_no" value="CTS/NTW/ROF/{{$date.sprintf('-%03d', $counter);}}" required autofocus />
+                                <td><x-label for="form_ref_no" :value="__(': '. $details->form_ref_no )" /></td>
                             </tr>
                             <tr>
                                 <td><x-label style="font-weight: bold;" for="department" :value="__('Department')" /></td>
                                 <td colspan="3"><x-label for="department" :value="': '.Auth::user()->dept" /></td>
-                                {{-- Below is the actual value that will be sent --}}
-                                <x-input id="department" class="block mt-1 w-40" type="hidden" name="department" value='{{ Auth::user()->dept }}' required autofocus />
-
-                                <td><x-label style="font-weight: bold;" for="date" :value="__('Request Date ')" /></td>
-                                <x-input hidden type="text" id="date" name="date" value="{{ date('Y-m-d') }}"/>
-                                <td><x-label :value="': '.date('Y-m-d')" /></td>
+           
+                                <td><x-label style="font-weight: bold;" for="date" :value="__('Request Date ')" /></td>                                
+                                <td><x-label :value="': '.$details->date" /></td>
                             </tr>
                             <tr>
                                 <td><x-label style="font-weight: bold;" for="project" :value="__('Project')"/></td>
                                 <td>    
                                     <div class="inline-block">: 
-                                    <x-input type="radio" id="transmission" name="project" value="Transmission" required/>
+                                    <input type="radio" {{ $details->project_type == "Transmission" ? "checked" : ""; }} id="transmission" name="project" value="Transmission" required>
                                     <label class="font-medium text-sm text-gray-700" for="transmission">Transmission</label>
                                     </div>
                                 </td>
                                 <td> 
-                                    <x-input type="radio" id="ftth" name="project" value="Fiber to the Home"/>
+                                    <input type="radio" {{ $details->project_type == "Fiber to the Home" ? "checked" : ""; }} id="ftth" name="project" value="Fiber to the Home">
                                     <label class="font-medium text-sm text-gray-700" for="ftth">Fiber to the Home</label>   
                                 </td>
+
                                 <td></td>
-                                <td>
-                                    <x-label style="font-weight: bold;" for="time" :value="__('Request Time')" />
-                                    <x-input hidden type="text" id="time" name="time" value="{{ date('H:i') }}"/>
-                                </td>
-                                <td><x-label for="time" :value="': '.__(date('H:i'))" /></td>
+
+                                <td><x-label style="font-weight: bold;" for="time" :value="__('Request Time')" /></td>
+                                <td><x-label :value="': '.$details->time" /></td>
                             </tr>
                             <tr>
                                 <td><x-label style="font-weight: bold;" for="others" :value="__('Other details')" /></td>
-                                <td colspan="3">: <input id="others" type="text" name="others" autocomplete="off" autofocus ></input></td>
+                                <td colspan="3">: <input id="others" type="text" name="others" value="{{ $details->others }}"></input></td>
 
                                 <td><x-label style="font-weight: bold;" for="request_order_type" :value="__('Request Order Type')"/></td>
                                 <td>:
-                                    <input type="text" placeholder="Others" list="order_type" id="request_order_type" name="request_order_type"  required/></input>
+                                    <input type="text" placeholder="{{ $details->order_type }}" list="order_type" id="request_order_type" name="request_order_type" value="" required/></input>
                                     <datalist id="order_type">
                                         <option value="New Project">
                                         <option value="Desktop Survey">
@@ -123,29 +114,24 @@ th {
                                     </tr>
                                 </thead>
                                 <tbody id="appendRow" >
-                                <tr>
-                                    <td><input for="rofi" id="link{{ $i }}" class="{{ $inputStyling }}" type="text" name="link{{ $i }}"></input></td>
-                                    <td>
-                                        <select name='remarks{{ $i }}' id='remarks{{ $i }}' :value="old('remarks{{ $i }}')" class="{{ $inputStyling }}">
-                                            <option selected value="blank"> 
-                                            </option>  
-                                            @foreach($categories as $category)
-                                                @if ($category['category'] == "High Loss" || $category['category'] == "ISP" || $category['category'] == "BHP")
-                                                    <optgroup label="{{ $category['type'] }}"> 
-                                                @endif
-
-                                                <option value="{{ $category['category'] }}"> 
-                                                {{ $category['category'] }}
+                                @foreach($details->rofItems as $rofi)
+                                    <tr>
+                                        <td><input for="rofi" id="link{{ $i }}" class="{{ $inputStyling }}" type="text" name="link{{ $i }}" value={{ $rofi->link }}></input></td>
+                                        <td>
+                                            <select name='remarks{{ $i }}' id='remarks{{ $i }}' class="{{ $inputStyling }}">
+                                                <option selected value="blank">
+                                                    {{ $rofi->category }} 
                                                 </option>  
-
-                                                @if ($category['category'] == "Others (Network Improvement)" || $category['category'] == "Others (New Link)" || $category['category'] == "Others (Relocation)")
-                                                    </optgroup> 
-                                                @endif
-                                            @endforeach 
-                                        </select>
-                                    </td>
-                                    <td><input disabled type="button" value="X" onclick="deleteRow(this)"></td>
-                                </tr>
+                                                @foreach($categories as $category=>$value)
+                                                    <option value="{{ $value['category'] }}"> 
+                                                    {{ $value['category'] }}
+                                                    </option>  
+                                                @endforeach 
+                                            </select>
+                                        </td>
+                                        <td><input disabled type="button" value="X" onclick="deleteRow(this)"></td>
+                                    </tr>
+                                @endforeach
                                 {{-- <tr style='visibility:collapse'></tr> --}}
                                 <x-input id="indexNum" hidden type="text" name="indexNum" value="{{ $i }}" autofocus />
                                 </tbody>
