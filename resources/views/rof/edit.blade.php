@@ -1,10 +1,20 @@
 <title>Request Order Form</title>
 @include('layouts.app')
+
+@if(session()->has('message'))
+    <div class="alert alert-success">
+        <?php
+            $message = session()->get('message');
+            echo "<script> alert('$message'); </script>";
+            session(['message' => '']);
+        ?>
+    </div>
+@endif
+
 <?php
 $jsonCategory = $categories->toJson();
 $i=1; //Item counter
 $date=date("d/m");
-
 $inputStyling = "mt-1 form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full";
 ?>
 
@@ -42,7 +52,7 @@ th {
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg m-4">
                 <div class="m-2">
-                    <form method="POST" action="">
+                    <form method="POST" action="{{ route('updateROF', $details->rof_id) }}">
                         @csrf
                         <table style="table-layout: auto; width:90%; border-spacing:15px;">
                             <tr style="min-width">
@@ -53,6 +63,7 @@ th {
                                 </td>
                                 <td><x-label style="font-weight: bold;" for="form_ref_no" :value="__('Form Ref. No.')" /></td>
                                 <td><x-label for="form_ref_no" :value="__(': '. $details->form_ref_no )" /></td>
+                                <x-input type="hidden" id="form_ref_no" name="form_ref_no" :value="__($details->form_ref_no )" />    
                             </tr>
                             <tr>
                                 <td><x-label style="font-weight: bold;" for="department" :value="__('Department')" /></td>
@@ -84,8 +95,8 @@ th {
                                 <td colspan="3">: <input id="others" type="text" name="others" value="{{ $details->others }}"></input></td>
 
                                 <td><x-label style="font-weight: bold;" for="request_order_type" :value="__('Request Order Type')"/></td>
-                                <td>:
-                                    <input type="text" placeholder="{{ $details->order_type }}" list="order_type" id="request_order_type" name="request_order_type" value="" required/></input>
+                                <td>:                                                                                                           
+                                    <input type="text" placeholder="" list="order_type" id="request_order_type" name="request_order_type" value="{{ $details->order_type }}" required/></input>
                                     <datalist id="order_type">
                                         <option value="New Project">
                                         <option value="Desktop Survey">
@@ -93,10 +104,18 @@ th {
                                     </datalist>  
                                 </td>
                             </tr>
-                            <x-input id="approved_at" hidden type="text" name="approved_at" value="" autofocus />
-                            <x-input id="approved_by" hidden type="text" name="approved_by" value="" autofocus />
-                            <x-input id="received_by" hidden type="text" name="received_by" value="" autofocus />
-                            <x-input id="received_at" hidden type="text" name="received_at" value="" autofocus />
+
+                            <tr>
+                                <td><x-label style="font-weight: bold;" for="others" :value="__('Request to')" /></td>
+                                <td>:
+                                    <select id="contractor" name="contractor" class="w-75" required>
+                                        <option value="blank"></option>
+                                        @for($j=0; $j < count($contractors); $j++ )
+                                            <option value="{{ $contractors[$j]; }}" {{ ($details['request_to'] == $contractors[$j]) ? "selected" : "" }}>{{ $contractors[$j]; }}</option>
+                                        @endfor
+                                    </datalist>  
+                                </td>
+                            </tr>
                         </table>
                         
                         {{-------------------------------------------------------------}}
@@ -114,24 +133,30 @@ th {
                                     </tr>
                                 </thead>
                                 <tbody id="appendRow" >
-                                @foreach($details->rofItems as $rofi)
-                                    <tr>
-                                        <td><input for="rofi" id="link{{ $i }}" class="{{ $inputStyling }}" type="text" name="link{{ $i }}" value={{ $rofi->link }}></input></td>
-                                        <td>
-                                            <select name='remarks{{ $i }}' id='remarks{{ $i }}' class="{{ $inputStyling }}">
-                                                <option selected value="blank">
-                                                    {{ $rofi->category }} 
-                                                </option>  
-                                                @foreach($categories as $category=>$value)
-                                                    <option value="{{ $value['category'] }}"> 
-                                                    {{ $value['category'] }}
-                                                    </option>  
-                                                @endforeach 
-                                            </select>
-                                        </td>
-                                        <td><input disabled type="button" value="X" onclick="deleteRow(this)"></td>
-                                    </tr>
-                                @endforeach
+                                    @foreach($details->rofItems as $rofi)
+                                        <tr>
+                                            <td><input for="rofi" id="link{{ $i }}" class="{{ $inputStyling }}" type="text" name="link{{ $i }}" value="{{ $rofi->link }}"></input></td>
+                                            <td>
+                                                <select name='remarks{{ $i }}' id='remarks{{ $i }}' class="{{ $inputStyling }}">
+                                                    @foreach($categories as $category=>$value)
+                                                        @if ($value['category'] == "High Loss" || $value['category'] == "ISP" || $value['category'] == "BHP")
+                                                            <optgroup label="{{ $value['type'] }}"> 
+                                                        @endif
+
+                                                        <option value="{{ $value['category'] }}" {{ $rofi['category'] == $value['category'] ? "selected" : "" }}> 
+                                                            {{ $value['category'] }}
+                                                        </option> 
+
+                                                        @if ($value['category'] == "Others (Network Improvement)" || $value['category'] == "Others (New Link)" || $value['category'] == "Others (Relocation)")
+                                                            </optgroup> 
+                                                        @endif 
+                                                    @endforeach 
+                                                </select>
+                                            </td>
+                                            <td><input id="deleteRow{{ $i }}" type="button" value="X" onclick="deleteRow(this)"></td>
+                                        </tr>
+                                        @php($i++)
+                                    @endforeach
                                 {{-- <tr style='visibility:collapse'></tr> --}}
                                 <x-input id="indexNum" hidden type="text" name="indexNum" value="{{ $i }}" autofocus />
                                 </tbody>
@@ -139,7 +164,7 @@ th {
                             <br>
                             <button class="m-2 btn btn-primary" type="button" id="dynamic-ar">+ Link</button>
                             <button class="m-2 float-end btn btn-success" type="submit">Submit</button>
-                            <button class="my-2 float-end btn btn-secondary" type="button" onclick="history.back()">Back</button>  
+                            <a class="my-2 float-end btn btn-secondary" href="{{ route('indexROF') }}">Back</a>  
                             {{-- <x-button class="mt-1">Add Link</x-button> --}}
                         </div>
                     </form><br><br>
@@ -159,6 +184,9 @@ th {
     //This const takes the JSON form of ROFI categories passed from $categories  
     const jsonCategory = <?= $jsonCategory?>;
 
+    // $('#deleteRow1').attr('disabled');
+    document.getElementById("deleteRow1").disabled = true;
+
     function getCategories(value, index) {
         formItemCategories += '<option value="' 
                     + value['category'] +'"> '
@@ -169,17 +197,7 @@ th {
     jsonCategory.forEach(getCategories);
   
     //Below function adds new row of fields.
-    // $("#dynamic-ar").click(function () {
-    //     i++;
-    //     formAddItem = '<tr><td><input id="link' + i + '" class="mt-1 w-40" type="text" name="link' 
-    //                     + i + '" autofocus></td><td><select name="remarks' + i + '" id="remarks' 
-    //                     + i + '" class="form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full">'
-    //                     + '<option selected value ="blank"></option>' + formItemCategories + '</select></td><td><input type="button" value="X" onclick="deleteRow(this)"></td></tr>'; 
-                        
-    //     var targetDiv = document.getElementById('rofi');
-    //     document.getElementById('indexNum').value = i;
-    //     $("#appendRow").append(formAddItem);
-    // });
+
     $("#dynamic-ar").click(function addRow () {
         i++;
         formAddItem = '<tr><td><input id="link' + i + '" class="{{ $inputStyling }}" type="text" name="link' 

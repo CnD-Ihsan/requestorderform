@@ -106,7 +106,7 @@
                     </table>
                 </div>
 
-                <table style="width:100%; margin:auto;">
+                {{-- <table style="width:100%; margin:auto;">
                     <thead></thead>
                     <tbody>
                         <tr>
@@ -138,6 +138,63 @@
                         </tr>
                         <tr>
                             <td colspan=2 class="no-top-padding"><div>{{ $details['remarks'] }}</div></td>
+                        </tr>
+                    </tbody>
+                </table> --}}
+
+                <table style="width:100%; margin:auto;">
+                    <thead></thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">Request Order Type</div></td>
+                            <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">Status</div></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="no-top-padding"><div>{{ $details['order_type'] }}</div></td>
+                            <td colspan="2" class="no-top-padding"><div>{{ $details['status'] }}</div></td>
+                        </tr>
+                        <tr><td colspan="4" class="no-bot-padding"><div class="font-weight-bold">Requested by</div></td></tr>
+                        <tr><td colspan="4" class="no-bot-padding"><div><img src="data:image/png;base64,{{ $requested_by }}"  style="width:256px;height:72px;"></div></td></tr>
+
+                        <tr>
+                            <td class="no-bot-padding"><div class="font-weight-bold">Name </div></td>
+                            <td colspan="3" class="no-bot-padding"><div>: {{ $details['requested_by'] }}</div></td>
+                        </tr>
+                        <tr>
+                            <td class="no-top-padding"><div class="font-weight-bold">Date </div></td>
+                            <td colspan="3" class="no-top-padding"><div>: {{ $details['date'] }}</div></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><hr></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">{{ ($details['status'] == "Rejected") ? "Rejected" : "Approved" }} by</div></td>
+                            <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">Received by</div></td>
+                        </tr>
+                        <tr>
+                            {{-- <td colspan="2"><div><img src="data:image/png;base64,{{ $request_sign }}"  style="width:256px;height:72px;"></div></td> --}}
+                            @if ($checked_by != "Pending")
+                            <td colspan="2"><div><img src="data:image/png;base64,{{ $checked_by }}"  style="width:256px;height:72px;"></div></td>
+                            @endif
+                            <td colspan="2"><div><img src=""  style="width:256px;height:72px;"></div></td>
+                        </tr>
+                        <tr>
+                            <td class="no-bot-padding"><div class="font-weight-bold">Name </div></td>
+                            <td class="no-bot-padding"><div>: {{ $details['checked_by'] }} Approver Name</div></td>
+                            <td class="no-bot-padding"><div class="font-weight-bold">Name </div></td>
+                            <td class="no-bot-padding"><div>: (Contractor Name) </div></td>
+                        </tr>
+                        <tr>
+                            <td class="no-top-padding"><div class="font-weight-bold">Date </div></td>
+                            <td class="no-top-padding"><div>: Approved date {{ $details['checked_at'] }} </div></td>
+                            <td class="no-top-padding"><div class="font-weight-bold">Date</div></td>
+                            <td class="no-top-padding"><div>: Received by </div></td>
+                        </tr>
+                        <tr {{ $details['status'] == "Rejected" ? "" : "hidden"; }}>
+                            <td colspan=4 class=""><div class="font-weight-bold">Remarks: </div></td>
+                        </tr>
+                        <tr>
+                            <td colspan=4 class="no-top-padding"><div>{{ $details['remarks'] }}</div></td>
                         </tr>
                     </tbody>
                 </table>

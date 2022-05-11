@@ -11,8 +11,8 @@ class ROF extends Model
     protected $table = 'rof';
     protected $primaryKey = 'rof_id';
     protected $attributes = [
-        'approved_at'=>null,
-        'approved_by'=>'',
+        'checked_at'=>null,
+        'checked_by'=>'',
         'received_by'=>'',
         'received_at'=>null
     ];

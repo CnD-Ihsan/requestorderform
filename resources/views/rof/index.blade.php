@@ -5,9 +5,8 @@
     <div class="alert alert-success">
         <?php
             $message = session()->get('message');
-            echo "
-                <script> alert('$message'); </script>
-            ";
+            echo "<script> alert('$message'); </script>";
+            session(['message' => '']);
         ?>
     </div>
 @endif
@@ -18,12 +17,11 @@ $inputStyling = "column_filter mt-1 form-control rounded-md shadow-sm border-gra
 
 <link href="{{ URL::asset('css/styles.css') }}" rel="stylesheet">
 <link href=" {{ URL::asset('css/app.css') }}" rel="stylesheet">
-<style>
 
+<style>
 label{block font-medium text-sm text-gray-700}
 
 input:disabled {
-  /* background: #dddddd; */
   border: 0;
 }
 
@@ -31,42 +29,18 @@ td, th {
     padding: 10px;
     border:none;
 }
-
-.defaultButton {
-
-  color: white;
-  padding: 8px 16px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  margin: 4px 2px;
-  transition-duration: 0.4s;
-  cursor: pointer;
-  border-radius: 12px;
-}
-
-.contentButton {
-  background-color: #dc3535; /* Green */
-  border: 2px solid #dc3535;
-  color: white;
-  padding: 8px 16px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  margin: 4px 2px;
-  transition-duration: 0.4s;
-  cursor: pointer;
-  border-radius: 12px;
-}
-
-.defaultOption {color:gray;}
-.otherOptions{color:black;}
 </style>
 
 <head>
+    @if (auth()->user()->user_type == "User")
     <script>
-        var user = {!! auth()->user()->toJson() !!};
+        var user = "User";
     </script>
+    @elseif (auth()->user()->user_type == "Contractor")
+    <script>
+        var user = "Contractor";
+    </script>
+    @endif
 </head>
 
 <html>
@@ -136,6 +110,7 @@ td, th {
                     <option selected value="blank"> 
                     </option>  
                     @foreach($categories as $category)
+
                         @if ($category['category'] == "High Loss" || $category['category'] == "ISP" || $category['category'] == "BHP")
                             <optgroup label="{{ $category['type'] }}"> 
                         @endif
@@ -147,6 +122,7 @@ td, th {
                         @if ($category['category'] == "Others (Network Improvement)" || $category['category'] == "Others (New Link)" || $category['category'] == "Others (Relocation)")
                             </optgroup> 
                         @endif
+                        
                     @endforeach 
                 </select>  
             </div>
@@ -190,6 +166,8 @@ td, th {
             </table>
         </div>
     </div>
+    <div class="m-4 pr-3"><a href="{{ route('test-email') }}" class="btn btn-primary float-right">Test Email</a></div>
+    {{-- <div class="m-4 pr-3"><button onclick="showAlert()" class="btn btn-secondary float-right">Test Email</button></div> --}}
     <div class="m-4 pr-3"  {{ auth()->user()->user_type == 'HOD' ? 'hidden' : '' }}><a href="{{ route('createROF') }}" class="btn btn-primary float-right">New Request</a></div>
 </body>
 </html>
@@ -201,7 +179,6 @@ td, th {
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />
 
 
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 <script src="https://cdn.datatables.net/datetime/1.1.2/js/dataTables.dateTime.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css">
@@ -209,14 +186,12 @@ td, th {
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 
-
-{{-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> --}}
-{{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script> --}}
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src={{ asset('js/script.js') }} type="text/javascript"></script>
 
 
 <script>
@@ -239,62 +214,79 @@ let approveElement = document.getElementsByClassName("approve-button");
         }
     });
 
-    function approveROF(rofID) {
-        swal({
-            text: "Approve Request Order?",
-            icon: "info",
-            buttons: true,
-        })
-        .then((approve) => {
-            if (approve) {
-                var url = '{{ route("approveROF", ['rofID', 'action' => "approve"]) }}';
-                url = url.replace('rofID', rofID);
-                window.location.href=url;
-                
-            } else {
-                return false;
-            }
-        });  
-    }
+    // function approveROF(rofID) {
+    //     swal({
+    //         text: "Approve Request Order?",
+    //         icon: "info",
+    //         buttons: true,
+    //     })
+    //     .then((approve) => {
+    //         if (approve) {
+    //             var url = '{{ route("approveROF", ['rofID', 'action' => "approve"]) }}';
+    //             url = url.replace('rofID', rofID);
+    //             window.location.href=url;
+    //         } else {
+    //             return false;
+    //         }
+    //     });  
+    // }
 
-    function rejectROF(rofID) {
-        swal({
-            text: "Reject Request Order?",
-            icon: "warning",
-            buttons: true,
-        })
-        .then((reject) => {
-            if (reject) {
-                swal({
-                    text: "Remarks: ",
-                    content: "input",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((remarks) => {
-                    if (remarks !== null){
-                        var url = '{{ route("rejectROF", ['rofID', 'remarks' => "-remarks"]) }}';
-                        url = url.replace('rofID', rofID);
-                        url = url.replace('-remarks', remarks);
+    // function rejectROF(rofID) {
+    //     swal({
+    //         text: "Reject Request Order?",
+    //         icon: "warning",
+    //         buttons: true,
+    //     })
+    //     .then((reject) => {
+    //         if (reject) {
+    //             swal({
+    //                 text: "Remarks: ",
+    //                 content: "input",
+    //                 buttons: true,
+    //                 dangerMode: true,
+    //             }).then((remarks) => {
+    //                 if (remarks !== null){
+    //                     var url = '{{ route("rejectROF", ['rofID', 'remarks' => "-remarks"]) }}';
+    //                     url = url.replace('rofID', rofID);
+    //                     url = url.replace('-remarks', remarks);
 
-                        window.location.href=url; 
-                    }
-                    else{
-                        swal('Request Order reject cancelled');
-                    }
-                })
-            } else {
-                return false;
-            }
-        });  
-    }
+    //                     window.location.href=url; 
+    //                 }
+    //                 else{
+    //                     swal('Request Order reject cancelled');
+    //                 }
+    //             })
+    //         } else {
+    //             return false;
+    //         }
+    //     });  
+    // }
 
     $(document).ready( function () {
 
         load_table();
         
-        $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+        //$('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+        $('#from_filter').datepicker({
+            dateFormat: 'yy-mm-dd',
+            onSelect: function (selected) {
+                var dt = new Date(selected);
+                dt.setDate(dt.getDate());
+                $('#to_filter').datepicker("option", "minDate", dt);
+            }
+        });
+        $('#to_filter').datepicker({
+            dateFormat: 'yy-mm-dd',
+            onSelect: function (selected) {
+                var dt = new Date(selected);
+                dt.setDate(dt.getDate());
+                $('#from_filter').datepicker("option", "maxDate", dt);
+            }
+        });
 
-        function load_table(fromDate = '', toDate = ''){
+
+
+        function load_table(fromDate = '', toDate = '', content = ''){
             table = $('#rof-table').DataTable({
             processing: true,
             serverSide: true,
@@ -302,7 +294,8 @@ let approveElement = document.getElementsByClassName("approve-button");
                 url: "{{ route('datatableROF') }}",
                 data: { 
                     minDate : fromDate, 
-                    maxDate : toDate
+                    maxDate : toDate,
+                    searchContent : content
                 }
             },
             columns: [
@@ -319,23 +312,27 @@ let approveElement = document.getElementsByClassName("approve-button");
             }
             });
             
-            if (user.user_type == 'User'){
-                table.columns(0).visible(false)
+            if (user == 'User'){
+                table.columns(0).visible(false);
+            }
+            else if (user == 'Contractor'){
+                table.columns(5).visible(false);
             }
 
             $('input.column_filter, #order_type_filter, select.column_filter').on('change', function() {
                 let filterType = $(this).attr('id').replace('_filter', '');
                 let filterValue = $(this).val();
-                
                 table.column(filterType+':name').search(filterValue).draw();
             });
         }
 
-        $('#from_filter, #to_filter').on('change', function () {
+        $('#from_filter, #to_filter, #order_content_filter').on('change', function () {
             minDate = $('#from_filter').datepicker().val();
             maxDate = $('#to_filter').datepicker().val();
+            content = $('#order_content_filter').val();
+
             table.destroy();
-            load_table(minDate, maxDate);
+            load_table(minDate, maxDate, content);
             table.draw();
         });
             

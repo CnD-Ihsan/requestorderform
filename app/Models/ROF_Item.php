@@ -31,6 +31,6 @@ class ROF_Item extends Model
     }
 
     public function rof(){
-        return $this->belongsTo(ROF::class, 'form_ref_no');
+        return $this->belongsTo(ROF::class, 'form_ref_no', 'form_ref_no');
     }
 }

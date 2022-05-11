@@ -1,5 +1,18 @@
 <!DOCTYPE html>
 
+@if(session()->has('message'))
+    <div class="alert alert-success">
+        <?php
+            $message = session()->get('message');
+            echo "
+                <script> 
+                    alert('$message'); 
+                </script>
+            ";
+        ?>
+    </div>
+@endif
+
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -8,6 +21,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script src={{ asset('js/script.js') }} type="text/javascript"></script>
 
         <title>Request Order Form</title>
 
@@ -40,6 +55,9 @@
             td.no-bot-padding {
                 padding-bottom: 0px;
             }
+            hr{
+                border-top: 1px solid;
+            }
         </style>
     </head>
 
@@ -49,31 +67,6 @@
             <div><h3 class="text-white bg-dark px-4" style="text-align:center;"><b>ENG-F01 | REQUEST ORDER FORM</b></h3></div>
 
             <div class="container">
-                {{-- <div class="row py-2">
-                    <div class="col font-weight-bold">Requested By</div>
-                    <div class="col col-3"><b>: </b><u>{{ $details['requested_by'] }}</u></div>
-                    <div class="col font-weight-bold">Form Ref. No.</div>
-                    <div class="col col-4"><b>: </b><u>{{ $details['form_ref_no'] }}</u></div>
-                </div>
-                <div class="row py-2">
-                    <div class="col font-weight-bold">Department</div>
-                    <div class="col col-3"><b>: </b><u>{{ $details->user['dept'] }}</u></div>
-                    <div class="col font-weight-bold">Request Date</div>
-                    <div class="col col-4"><b>: </b><u>{{ $details['date'] }}</u></div>
-                </div>
-                <div class="row py-2">
-                    <div class="col font-weight-bold">Project</div>
-                    <div class="col col-3"><b>: </b><u>{{ $details['project_type'] }}</u></div>
-                    <div class="col font-weight-bold">Request Time</div>
-                    <div class="col col-4"><b>: </b><u>{{ $details['time'] }}</u></div>
-                </div>
-                <div class="row py-2">
-                    <div class="col font-weight-bold col-3">Other details:</div>
-                </div>
-                <div class="row">
-                    <div class="col pb-4">{{ $details['others'] }}</div>
-                </div> --}}
-
                 <table style="width:100%; margin:auto;">
                     <thead></thead>
                     <tbody>
@@ -97,7 +90,11 @@
                         </tr>
                         <tr class="">
                             <td class=""><div class="font-weight-bold">Other details</div></td>
-                            <td colspan="3" class=""><div class=""><b>: </b> {{ $details['others'] }}</div></td>
+                            <td colspan="3" class=""><div class=""><b>:</b> {{ $details['others'] }}</div></td>
+                        </tr>
+                        <tr class="">
+                            <td class=""><div class="font-weight-bold">Request to</div></td>
+                            <td colspan="3" class=""><div class=""><h5>: <u>{{ $details['request_to'] }}</u></h5> </div></td>
                         </tr>
                     </tbody>
                 </table>
@@ -143,8 +140,7 @@
                             <td colspan="2" class="no-top-padding"><div>{{ $details['status'] }}</div></td>
                         </tr>
                         <tr><td colspan="4" class="no-bot-padding"><div class="font-weight-bold">Requested by</div></td></tr>
-                        <tr><td colspan="4" class="no-bot-padding"><div><img src="{{ asset('img/signature.png') }}"  style="width:256px;height:72px;"></div></td></tr>
-
+                        <tr><td colspan="4" class="no-bot-padding"><div><img src="{{ asset('img/USER/'.$requested_by.'.png') }}"  style="width:256px;height:72px;"></div></td></tr>
                         <tr>
                             <td class="no-bot-padding"><div class="font-weight-bold">Name </div></td>
                             <td colspan="3" class="no-bot-padding"><div>: {{ $details['requested_by'] }}</div></td>
@@ -157,24 +153,30 @@
                             <td colspan="4"><hr></td>
                         </tr>
                         <tr>
-                            <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">{{ ($details['status'] == "Rejected") ? "Rejected" : "Approved" }} by</div></td>
+                            <td colspan="2" class="no-bot-padding w-50"><div class="font-weight-bold">{{ ($details['status'] == "Rejected") ? "Rejected" : "Approved" }} by</div></td>
                             <td colspan="2" class="no-bot-padding"><div class="font-weight-bold">Received by</div></td>
                         </tr>
                         <tr>
-                            <td colspan="2"><div><img src="{{ asset('img/signature (1).png') }}"  style="width:256px;height:72px;"></div></td>
-                            <td colspan="2"><div><img src="{{ asset('img/signature (2).png') }}"  style="width:256px;height:72px;"></div></td>
+                            <td colspan="2">
+                                <div>
+                                    @if($checked_by != "Pending")
+                                        <img src="{{ asset('img/HOD/'.$checked_by.'.png') }}"  style="width:256px;height:72px;">
+                                    @endif
+                                </div>
+                            </td>
+                            <td colspan="2"><div></div></td>
                         </tr>
                         <tr>
                             <td class="no-bot-padding"><div class="font-weight-bold">Name </div></td>
-                            <td class="no-bot-padding"><div>: {{ $details['approved_by'] }} Approver Name</div></td>
-                            <td class="no-bot-padding"><div class="font-weight-bold">Name </div></td>
-                            <td class="no-bot-padding"><div>: (Contractor Name)) </div></td>
+                            <td class="no-bot-padding"><div>: {{ $details['checked_by'] }}</div></td>
+                            <td class="no-bot-padding w-25"><div class="font-weight-bold">Name </div></td>
+                            <td class="no-bot-padding"><div>:</div></td>
                         </tr>
                         <tr>
                             <td class="no-top-padding"><div class="font-weight-bold">Date </div></td>
-                            <td class="no-top-padding"><div>: Approved date {{ $details['approved_at'] }} </div></td>
+                            <td class="no-top-padding"><div>: {{ $details['checked_at'] }} </div></td>
                             <td class="no-top-padding"><div class="font-weight-bold">Date</div></td>
-                            <td class="no-top-padding"><div>: Received by </div></td>
+                            <td class="no-top-padding"><div>:</div></td>
                         </tr>
                         <tr {{ $details['status'] == "Rejected" ? "" : "hidden"; }}>
                             <td colspan=4 class=""><div class="font-weight-bold">Remarks: </div></td>
@@ -187,15 +189,18 @@
 
                 <div class="row pt-5">
                     <div class="col">
-                        {{-- <button type="button" onclick="window.location='{{ route('updateROF', [$details['rof_id'], 'approve']); }}'" class="btn btn-success {{ (Auth::user()->user_type != 'HOD' || $details['approved_by'] != null) ? 'hidden' : ''; }}">Approve</button> --}}
-                        @if (auth()->user()->user_type == "HOD")
-                            <button onclick="approveROF({{ $rofs->rof_id }})" class="approve-button btn btn-success m-1">Approve</button>
-                            <button onclick="rejectROF({{ $rofs->rof_id }})" class="reject-button btn btn-danger m-1">Reject</button>
+                        @if (auth()->user()->user_type == "HOD" && $details['status'] == 'Pending')
+                            <button onclick="approveROF({{ $details['rof_id'] }})" class="approve-button btn btn-success m-1">Approve</button>
+                            <button onclick="rejectROF({{ $details['rof_id'] }})" class="reject-button btn btn-danger m-1">Reject</button>
                         @endif
 
-                        <button type="button" onclick="window.location='{{ route('toPDF', [$details['rof_id']]); }}'" class="btn btn-danger">Save as PDF</button>
-                        
-                        @if ($details['status'] == "Pending")
+                        @if (auth()->user()->user_type == "Contractor" && $details['received_by'] == "")
+                            <button onclick="receiveROF({{ $details['rof_id'] }})" class="approve-button btn btn-success m-1">Accept</button>
+                        @else
+                            <button type="button" onclick="window.location='{{ route('downloadPDF', [$details['rof_id']]); }}'" class="btn btn-warning">Save as PDF</button>
+                        @endif
+
+                        @if (auth()->user()->user_type == "User" && $details['status'] == "Pending")
                             <a id="edit_{{ $details->rof_id }}" href="{{ route('editROF', [$details['rof_id']]); }}" class="btn btn-warning m-1">Edit Details</a>
                         @endif
 
@@ -203,7 +208,7 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </body>
 </html>
+

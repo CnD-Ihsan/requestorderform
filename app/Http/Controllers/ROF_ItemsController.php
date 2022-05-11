@@ -9,7 +9,7 @@ class ROF_ItemsController extends Controller
     //
     public function linkRefNoBuilder($category, &$labelCount){
         
-        $categoryA = "Network Improvement High Loss Aging Cable Protection Others (Existing Link)";
+        $categoryA = "High Loss Aging Cable Protection Others (Network Improvement)";
         $categoryB = "ISP Enterprise Others (New Link)";
         $categoryC = "BHP Local Authority Others (Relocation)";
         $label = ''; 

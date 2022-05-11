@@ -30,10 +30,6 @@ Route::get('/', function () {
     return redirect()->route('rof');
 });
 
-// Route::get('/welcome', function () {
-//     return view('welcome');
-// });
-
 //Index Route
 Route::get('rof/index', [App\Http\Controllers\ROFController::class,'index'])->middleware(['auth'])->name('indexROF');
 
@@ -53,19 +49,21 @@ Route::get('rof/{rof_id}', [App\Http\Controllers\ROFController::class,'show'])->
 Route::post('rof/create', [App\Http\Controllers\ROFController::class,'store'])->middleware(['auth'])->name('saveROF');
 
 //Update Route
-Route::get('rof/update/{rof_id}', [App\Http\Controllers\ROFController::class,'update'])->middleware(['auth'])->name('updateROF');
+Route::post('rof/update/{rof_id}', [App\Http\Controllers\ROFController::class,'update'])->middleware(['auth'])->name('updateROF');
 
 Route::get('rof/edit/{rof_id}', [App\Http\Controllers\ROFController::class,'edit'])->middleware(['auth'])->name('editROF');
 
 Route::get('rof/approve/{rof_id}', [App\Http\Controllers\ROFController::class,'approve_rof'])->middleware(['auth'])->name('approveROF');
 Route::get('rof/reject/{rof_id}', [App\Http\Controllers\ROFController::class,'reject_rof'])->middleware(['auth'])->name('rejectROF');
-//Route::resource('/rof', [App\Http\Controllers\ROFController::class,'index'])->middleware(['auth']);//->name('indexROF');
+Route::get('rof/receive/{rof_id}', [App\Http\Controllers\ROFController::class,'receive_rof'])->middleware(['auth'])->name('receiveROF');
 
 Route::get('/register', function () {
     return view('auth/register');
 })->name('register');
 
-Route::get('rof/pdf/{rof_id}', [App\Http\Controllers\ROFController::class,'toPDF'])->middleware(['auth'])->name('toPDF');
+Route::get('rof/pdf/{rof_id}', [App\Http\Controllers\ROFController::class,'downloadPDF'])->middleware(['auth'])->name('downloadPDF');
+
+Route::get('test-email', [App\Http\Controllers\ROFController::class,'sendEmail'])->name('test-email');
 
 require __DIR__.'/auth.php';
 

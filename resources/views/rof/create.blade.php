@@ -1,19 +1,20 @@
 <title>Request Order Form</title>
 @include('layouts.app')
 <?php
+//use App\Http\Controllers\ROFController;
+use App\Models\User;
+
 $jsonCategory = $categories->toJson();
-$i=1; //Item counter
-$date=date("d/m");
+
+$date=date("m/d"); //this date is only used as Form Ref No builder
 $counter = $daily_counter['counter'];
 $counter++;
 
+//below is the styling of all applicable input type. it is a collection of bootstrap 4 classes
 $inputStyling = "mt-1 form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full";
 ?>
 
 <style>
-
-label{block font-medium text-sm text-gray-700}
-
 input:disabled {
   /* background: #dddddd; */
   border: 0;
@@ -29,20 +30,19 @@ th {
   font-weight: bold;
   text-align: center;
 }
-
 </style>
 
 <app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    <slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight m-3">
             {{ __('Request Order Form') }}
-        </h2>
-    </x-slot>
+        </h2><br>
+    </slot>
 
     <!-- Request Order Form starts here -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg m-4">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg ml-4">
                 <div class="m-2">
                     <form method="POST" action="">
                         @csrf
@@ -90,11 +90,11 @@ th {
                             </tr>
                             <tr>
                                 <td><x-label style="font-weight: bold;" for="others" :value="__('Other details')" /></td>
-                                <td colspan="3">: <input id="others" type="text" name="others" autocomplete="off" autofocus ></input></td>
-
+                                <td colspan="3">: <input id="others" type="text" name="others" value=""></input></td>
+                                {{-- <input id="others" type="text" name="others" autocomplete="off" autofocus ></input> --}}
                                 <td><x-label style="font-weight: bold;" for="request_order_type" :value="__('Request Order Type')"/></td>
                                 <td>:
-                                    <input type="text" placeholder="Others" list="order_type" id="request_order_type" name="request_order_type"  required/></input>
+                                    <input type="text" placeholder="Others" list="order_type" id="request_order_type" name="request_order_type" class="w-75" required/></input>
                                     <datalist id="order_type">
                                         <option value="New Project">
                                         <option value="Desktop Survey">
@@ -102,8 +102,23 @@ th {
                                     </datalist>  
                                 </td>
                             </tr>
-                            <x-input id="approved_at" hidden type="text" name="approved_at" value="" autofocus />
-                            <x-input id="approved_by" hidden type="text" name="approved_by" value="" autofocus />
+
+                            <tr>
+                                <td><x-label style="font-weight: bold;" for="others" :value="__('Request to')" /></td>
+                                <td>:
+                                    <select id="contractor" name="contractor" class="w-75" required>
+                                        <option value=""></option>
+                                        @for($i=0; $i < count($contractors); $i++ )
+                                            <option value="{{ $contractors[$i]; }}">{{ $contractors[$i]; }}</option>
+                                        @endfor
+                                    </select>
+                                </td>
+                            </tr>
+
+                            <tr><td></td></tr>
+
+                            <x-input id="checked_at" hidden type="text" name="checked_at" value="" autofocus />
+                            <x-input id="checked_by" hidden type="text" name="checked_by" value="" autofocus />
                             <x-input id="received_by" hidden type="text" name="received_by" value="" autofocus />
                             <x-input id="received_at" hidden type="text" name="received_at" value="" autofocus />
                         </table>
@@ -111,7 +126,7 @@ th {
                         {{-------------------------------------------------------------}}
                         <!--Request Order Items-->
                         <div><hr style="margin-top:3%; margin-bottom:3%;"></div>
-                        <div style="width:80%; margin:auto;">
+                        <div style="width:85%; margin:auto;">
                             {{-- <x-label for="rofi" style="font-weight: bold;" :value="__('Request Order Items:')" /> --}}
                             <div class="my-3"><h5><b>Request Order Item<b></h5></div>
                             <table id="rofi">
@@ -124,9 +139,9 @@ th {
                                 </thead>
                                 <tbody id="appendRow" >
                                 <tr>
-                                    <td><input for="rofi" id="link{{ $i }}" class="{{ $inputStyling }}" type="text" name="link{{ $i }}"></input></td>
+                                    <td><input for="rofi" id="link1" class="{{ $inputStyling }}" type="text" name="link1"></input></td>
                                     <td>
-                                        <select name='remarks{{ $i }}' id='remarks{{ $i }}' :value="old('remarks{{ $i }}')" class="{{ $inputStyling }}">
+                                        <select name='remarks1' id='remarks1' :value="old('remarks1')" class="{{ $inputStyling }}">
                                             <option selected value="blank"> 
                                             </option>  
                                             @foreach($categories as $category)
@@ -147,7 +162,7 @@ th {
                                     <td><input disabled type="button" value="X" onclick="deleteRow(this)"></td>
                                 </tr>
                                 {{-- <tr style='visibility:collapse'></tr> --}}
-                                <x-input id="indexNum" hidden type="text" name="indexNum" value="{{ $i }}" autofocus />
+                                <x-input id="indexNum" hidden type="text" name="indexNum" value="1" autofocus />
                                 </tbody>
                             </table>
                             <br>
@@ -169,14 +184,24 @@ th {
 <script type="text/javascript">
 
     //This var refers to the ROFI limit declared at the top PHP lines, used in adding a new row function
-    var i = {{ $i }}; 
+    var i = 1; 
     //This const takes the JSON form of ROFI categories passed from $categories  
     const jsonCategory = <?= $jsonCategory?>;
 
     function getCategories(value, index) {
+
+        if(value['category'] == "High Loss" || value['category'] == "ISP" || value['category'] == "BHP"){
+            formItemCategories += '<optgroup label="' + value['type'] + '">';
+        }
+
         formItemCategories += '<option value="' 
                     + value['category'] +'"> '
                     + value['category'] +' </option>';
+
+        if(value['category'] == "Others (Network Improvement)" || value['category'] == "Others (New Link)" || value['category'] == "Others (Relocation)"){
+            formItemCategories += '</optgroup>';
+        }  
+
     }
 
     var formAddItem = '', formItemCategories = '';

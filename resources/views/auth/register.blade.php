@@ -49,13 +49,20 @@
 
                     <!-- Department -->
                     <div class="mt-4">
-                        <x-label for="dept" :value="__('Department')" />
+                        <x-label for="dept" :value="__('Department/Contractor')" />
                         <br>
                         <select name="dept" id="dept" class="block mt-1 w-full">
                             <option selected value=""></option>
-                            <option value="Finance">Finance</option>
-                            <option value="BDD">BDD</option>
-                            <option value="Engineering">Engineering</option>
+                            <option value="Finance">Dept. of Finance</option>
+                            <option value="BDD">Dept. of BDD</option>
+                            <option value="Engineering">Dept. of Engineering</option>
+                            <option value="Maribumi">Maribumi</option>
+                            <option value="Fiberhome">Fiberhome</option>
+                            <option value="Apex">Apex</option>
+                            <option value="Redaway">Redaway</option>
+                            {{-- @for($i=0; $i < count($contractors); $i++ )
+                                <option value="{{ $contractors[$i]; }}">{{ $contractors[$i]; }}</option>
+                            @endfor --}}
                         </select>
                     </div>
 
@@ -69,6 +76,7 @@
                             <option value="Maxis">Maxis</option>
                             <option value="Digi">Digi</option>
                             <option value="YTL">YTL</option>
+                            <option value="Others">Others</option>
                         </select>                    
                     </div>
 
@@ -79,6 +87,7 @@
                         <select name="user_type" id="user_type" class="block mt-1 w-full">
                             <option value="User">User</option>
                             <option value="HOD">HOD</option>
+                            <option value="Contractor">Contractor</option>
                         </select>                    
                     </div>
 
