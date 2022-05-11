@@ -132,6 +132,7 @@ class ROFController extends Controller
                     'checked_at'=>date("Y-m-d H:i:s"),
                     'status' => 'Approved',
                 ]);
+                $this->sendEmail($rof_id);
                 return redirect()->back()->with('message','Request Order succesfully approved!');
         }
     }
@@ -243,7 +244,7 @@ class ROFController extends Controller
 
             $rofs = ROF::with('user', 'rofItems');
             
-            //filter table to only show what form they had requested
+            //filter table to only show forms relevant to user type
             if(Auth::user()->user_type == 'User'){
                 $rofs = $rofs->where('requested_by', Auth::user()->name);
             } else if(Auth::user()->user_type == 'Contractor'){
@@ -291,7 +292,6 @@ class ROFController extends Controller
         $data = compact("pdf", "details");
 
         Mail::to('ihsanuddin@ctsabah.com.my')-> send(new NotificationEmail($data));
-        return 'what do';
     }
 
 }

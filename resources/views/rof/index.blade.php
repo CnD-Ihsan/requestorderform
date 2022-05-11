@@ -17,6 +17,7 @@ $inputStyling = "column_filter mt-1 form-control rounded-md shadow-sm border-gra
 
 <link href="{{ URL::asset('css/styles.css') }}" rel="stylesheet">
 <link href=" {{ URL::asset('css/app.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 
 <style>
 label{block font-medium text-sm text-gray-700}
@@ -33,13 +34,17 @@ td, th {
 
 <head>
     @if (auth()->user()->user_type == "User")
-    <script>
-        var user = "User";
-    </script>
+        <script>
+            var user = "User";
+        </script>
     @elseif (auth()->user()->user_type == "Contractor")
-    <script>
-        var user = "Contractor";
-    </script>
+        <script>
+            var user = "Contractor";
+        </script>
+    @else
+        <script>
+            var user = "HOD";
+        </script>
     @endif
 </head>
 
@@ -132,7 +137,7 @@ td, th {
                 <label>
                     From
                 </label>
-                <input autocomplete="off" class="datepicker column_filter  {{ $inputStyling }}" type="text" id="from_filter" name="from_filter"></input>
+                <input autocomplete="off" class="datepicker {{ $inputStyling }}" type="text" id="from_filter" name="from_filter"></input>
             </div>
         </div>
         <div class="col-sm-2">
@@ -143,7 +148,7 @@ td, th {
                 <input autocomplete="off" class="datepicker  {{ $inputStyling }}" type="text" id="to_filter" name="to_filter"></input>
             </div>
         </div>
-                <button type="button" class="btn btn-info mb-3" style="width:8%; margin: auto;" onclick="clearFilter()" aria-label="Clear Filter" data-toggle="tooltip" data-placement="bottom" title="Clear Filter">Clear Filter</button>
+                <button type="button" class="btn btn-dark mb-3" style="width:8%; margin: auto;" onclick="clearFilter()" aria-label="Clear Filter" data-toggle="tooltip" data-placement="bottom" title="Clear Filter">Clear Filter</button>
     </div>
 
     {{-- ROF Datatable --}}
@@ -166,14 +171,15 @@ td, th {
             </table>
         </div>
     </div>
-    <div class="m-4 pr-3"><a href="{{ route('test-email') }}" class="btn btn-primary float-right">Test Email</a></div>
-    {{-- <div class="m-4 pr-3"><button onclick="showAlert()" class="btn btn-secondary float-right">Test Email</button></div> --}}
     <div class="m-4 pr-3"  {{ auth()->user()->user_type == 'HOD' ? 'hidden' : '' }}><a href="{{ route('createROF') }}" class="btn btn-primary float-right">New Request</a></div>
 </body>
 </html>
 
 <!-- Javascript -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />
@@ -182,9 +188,6 @@ td, th {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 <script src="https://cdn.datatables.net/datetime/1.1.2/js/dataTables.dateTime.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css">
-
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -197,6 +200,7 @@ td, th {
 <script>
 
 let approveElement = document.getElementsByClassName("approve-button");
+var minDate, maxDate, table;   
 
     function clearFilter() {
         document.getElementById("status_filter").value = "";
@@ -214,65 +218,18 @@ let approveElement = document.getElementsByClassName("approve-button");
         }
     });
 
-    // function approveROF(rofID) {
-    //     swal({
-    //         text: "Approve Request Order?",
-    //         icon: "info",
-    //         buttons: true,
-    //     })
-    //     .then((approve) => {
-    //         if (approve) {
-    //             var url = '{{ route("approveROF", ['rofID', 'action' => "approve"]) }}';
-    //             url = url.replace('rofID', rofID);
-    //             window.location.href=url;
-    //         } else {
-    //             return false;
-    //         }
-    //     });  
-    // }
-
-    // function rejectROF(rofID) {
-    //     swal({
-    //         text: "Reject Request Order?",
-    //         icon: "warning",
-    //         buttons: true,
-    //     })
-    //     .then((reject) => {
-    //         if (reject) {
-    //             swal({
-    //                 text: "Remarks: ",
-    //                 content: "input",
-    //                 buttons: true,
-    //                 dangerMode: true,
-    //             }).then((remarks) => {
-    //                 if (remarks !== null){
-    //                     var url = '{{ route("rejectROF", ['rofID', 'remarks' => "-remarks"]) }}';
-    //                     url = url.replace('rofID', rofID);
-    //                     url = url.replace('-remarks', remarks);
-
-    //                     window.location.href=url; 
-    //                 }
-    //                 else{
-    //                     swal('Request Order reject cancelled');
-    //                 }
-    //             })
-    //         } else {
-    //             return false;
-    //         }
-    //     });  
-    // }
-
     $(document).ready( function () {
 
         load_table();
-        
-        //$('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+
         $('#from_filter').datepicker({
             dateFormat: 'yy-mm-dd',
             onSelect: function (selected) {
                 var dt = new Date(selected);
                 dt.setDate(dt.getDate());
                 $('#to_filter').datepicker("option", "minDate", dt);
+                minDate = selected;
+                moreFilter();
             }
         });
         $('#to_filter').datepicker({
@@ -281,10 +238,10 @@ let approveElement = document.getElementsByClassName("approve-button");
                 var dt = new Date(selected);
                 dt.setDate(dt.getDate());
                 $('#from_filter').datepicker("option", "maxDate", dt);
+                maxDate = selected;
+                moreFilter();
             }
         });
-
-
 
         function load_table(fromDate = '', toDate = '', content = ''){
             table = $('#rof-table').DataTable({
@@ -326,21 +283,18 @@ let approveElement = document.getElementsByClassName("approve-button");
             });
         }
 
-        $('#from_filter, #to_filter, #order_content_filter').on('change', function () {
-            minDate = $('#from_filter').datepicker().val();
-            maxDate = $('#to_filter').datepicker().val();
-            content = $('#order_content_filter').val();
+        $('#order_content_filter').on('change', function () {
+            moreFilter();
+        });
 
+        function moreFilter(){
+            content = $('#order_content_filter').val();
             table.destroy();
             load_table(minDate, maxDate, content);
-            table.draw();
-        });
+            table.draw();   
+        }
             
-     });
-
-    var minDate, maxDate, table;   
-    
-
+     });    
 
 </script>
 

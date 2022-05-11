@@ -204,7 +204,7 @@
                             <a id="edit_{{ $details->rof_id }}" href="{{ route('editROF', [$details['rof_id']]); }}" class="btn btn-warning m-1">Edit Details</a>
                         @endif
 
-                        <button type="button" onclick="history.back()" class="btn btn-secondary">Back</button>
+                        <a type="button" href="{{ route('indexROF') }}" class="btn btn-secondary">Back</a>
                     </div>
                 </div>
             </div>
