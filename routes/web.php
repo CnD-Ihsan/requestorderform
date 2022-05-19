@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers;
+use App\Http\Controllers\ROFController;
 //use App\Resources\Views\rof;
 
 /*
@@ -30,40 +31,44 @@ Route::get('/', function () {
     return redirect()->route('rof');
 });
 
-//Index Route
-Route::get('rof/index', [App\Http\Controllers\ROFController::class,'index'])->middleware(['auth'])->name('indexROF');
-
-//Create Route
-Route::get('rof/create', [App\Http\Controllers\ROFController::class,'create'])->middleware(['auth'])->name('createROF');
-
-Route::get('rof/datatable', [App\Http\Controllers\ROFController::class,'datatableBuilder'])->middleware(['auth'])->name('datatableROF');
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
-
-//Show Route
-Route::get('rof/{rof_id}', [App\Http\Controllers\ROFController::class,'show'])->middleware(['auth'])->name('showROF');
-
-//Store Route
-Route::post('rof/create', [App\Http\Controllers\ROFController::class,'store'])->middleware(['auth'])->name('saveROF');
-
-//Update Route
-Route::post('rof/update/{rof_id}', [App\Http\Controllers\ROFController::class,'update'])->middleware(['auth'])->name('updateROF');
-
-Route::get('rof/edit/{rof_id}', [App\Http\Controllers\ROFController::class,'edit'])->middleware(['auth'])->name('editROF');
-
-Route::get('rof/approve/{rof_id}', [App\Http\Controllers\ROFController::class,'approve_rof'])->middleware(['auth'])->name('approveROF');
-Route::get('rof/reject/{rof_id}', [App\Http\Controllers\ROFController::class,'reject_rof'])->middleware(['auth'])->name('rejectROF');
-Route::get('rof/receive/{rof_id}', [App\Http\Controllers\ROFController::class,'receive_rof'])->middleware(['auth'])->name('receiveROF');
-
 Route::get('/register', function () {
     return view('auth/register');
 })->name('register');
 
-Route::get('rof/pdf/{rof_id}', [App\Http\Controllers\ROFController::class,'downloadPDF'])->middleware(['auth'])->name('downloadPDF');
+Route::group(([
+    'middleware' => 'auth',
+    'prefix' => 'rof',
+    'controller' => ROFController::class,
+]), function(){
+    //Index Page Route
+    Route::get('/index','index')->name('indexROF');
 
-Route::get('test-email', [App\Http\Controllers\ROFController::class,'sendEmail'])->name('test-email');
+    //Create Page Route
+    Route::get('/create', 'create')->name('createROF');
+
+    //Datatable Builder Function Route
+    Route::get('/datatable', 'datatableBuilder')->name('datatableROF');
+
+    //Show Page Route
+    Route::get('/{rof_id}', 'show')->name('showROF');
+
+    //Store Function Route
+    Route::post('/create','store')->name('saveROF');
+
+    //Update Function Route
+    Route::post('/update/{rof_id}','update')->name('updateROF');
+
+    //Edit Page Route
+    Route::get('/edit/{rof_id}', 'edit')->name('editROF');
+
+    //ROF Status Mutator Route
+    Route::get('/approve/{rof_id}','approve_rof')->name('approveROF');
+    Route::get('/reject/{rof_id}', 'reject_rof')->name('rejectROF');
+    Route::get('/receive/{rof_id}', 'receive_rof')->name('receiveROF');
+
+    //Download PDF Function Route
+    Route::get('/pdf/{rof_id}', 'downloadPDF')->name('downloadPDF');
+});
 
 require __DIR__.'/auth.php';
 

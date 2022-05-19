@@ -64,6 +64,7 @@
     <body class="antialiased">
         @include('sweetalert::alert')
         <div class="mx-auto" style="width:60%">
+            <div class="py-3"><x-application-logo class="w-20 h-20 fill-current text-gray-500" /></div>
             <div><h3 class="text-white bg-dark px-4" style="text-align:center;"><b>ENG-F01 | REQUEST ORDER FORM</b></h3></div>
 
             <div class="container">
@@ -78,7 +79,7 @@
                         </tr>
                         <tr class="">
                             <td class=""><div class="font-weight-bold">Department</div></td>
-                            <td class=""><div class=""><b>: </b>{{ $details->user['dept'] }}</div></td>
+                            <td class=""><div class=""><b>: </b>{{ $details->user['user_group'] }}</div></td>
                             <td class=""><div class="font-weight-bold">Request Date</div></td>
                             <td class=""><div class=""><b>: </b>{{ $details['date'] }}</div></td>
                         </tr>
@@ -93,7 +94,7 @@
                             <td colspan="3" class=""><div class=""><b>:</b> {{ $details['others'] }}</div></td>
                         </tr>
                         <tr class="">
-                            <td class=""><div class="font-weight-bold">Request to</div></td>
+                            <td class=""><div class="font-weight-bold">Appointed to</div></td>
                             <td colspan="3" class=""><div class=""><h5>: <u>{{ $details['request_to'] }}</u></h5> </div></td>
                         </tr>
                     </tbody>
@@ -194,11 +195,7 @@
                             <button onclick="rejectROF({{ $details['rof_id'] }})" class="reject-button btn btn-danger m-1">Reject</button>
                         @endif
 
-                        @if (auth()->user()->user_type == "Contractor" && $details['received_by'] == "")
-                            <button onclick="receiveROF({{ $details['rof_id'] }})" class="approve-button btn btn-success m-1">Accept</button>
-                        @else
-                            <button type="button" onclick="window.location='{{ route('downloadPDF', [$details['rof_id']]); }}'" class="btn btn-warning">Save as PDF</button>
-                        @endif
+                        <a href="{{ route('downloadPDF', [$details['rof_id']]); }}" target="_blank" class="btn btn-warning">Save as PDF</a>
 
                         @if (auth()->user()->user_type == "User" && $details['status'] == "Pending")
                             <a id="edit_{{ $details->rof_id }}" href="{{ route('editROF', [$details['rof_id']]); }}" class="btn btn-warning m-1">Edit Details</a>

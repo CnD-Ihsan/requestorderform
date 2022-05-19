@@ -520,8 +520,16 @@ div.preheader {
         
             <div style="Margin-left: 20px;Margin-right: 20px;">
       <div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;">
-        <h1 class="size-24" style="Margin-top: 0;Margin-bottom: 0;font-style: normal;font-weight: normal;color: #b8bdc9;font-size: 20px;line-height: 28px;text-align: left;" lang="x-size-24"><font color="#8690a8">A new Request Order Form has been applied.</font></h1><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><span style="text-decoration: inherit;">Details as below</span></p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><span style="text-decoration: inherit;">Ref. No: <b>{{ $mail_data['details']->form_ref_no }}</b></span></p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><span style="text-decoration: inherit;">Requested by: <b>{{ $mail_data['details']->requested_by }}</b><br />
-Requested to: <b>{{ $mail_data['details']->request_to }}</b></span></p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17">Status: <b>{{ $mail_data['details']->status }}</b></p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17">&nbsp;</p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 20px;font-size: 17px;line-height: 26px;" lang="x-size-17">&nbsp;</p>
+        <h1 class="size-24" style="Margin-top: 0;Margin-bottom: 0;font-style: normal;font-weight: normal;color: #b8bdc9;font-size: 20px;line-height: 28px;text-align: left;" lang="x-size-24"><font color="#8690a8">A {{ $mail_data['details']->status == 'Rejected' ? '' : 'new '  }}Request Order Form has been {{ $mail_data['details']->status == 'Rejected' ? 'rejected ' : 'applied'  }}.</font></h1>
+        <p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><span style="text-decoration: inherit;">Details as below</span></p>
+        <p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><span style="text-decoration: inherit;">Ref. No: <b>{{ $mail_data['details']->form_ref_no }}</b></span></p>
+        <p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><span style="text-decoration: inherit;">Requested by: <b>{{ $mail_data['details']->requested_by }}</b><br/>
+Appointed to: <b>{{ $mail_data['details']->request_to }}</b></span></p>
+<p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17">Status: <b>{{ $mail_data['details']->status }}</b></p>
+@if ($mail_data['details']->status == 'Rejected')
+<p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17">Remarks: <b>{{ $mail_data['details']->remarks }}</b>
+@endif
+</p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17">&nbsp;</p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 20px;font-size: 17px;line-height: 26px;" lang="x-size-17">&nbsp;</p>
       </div>
     </div>
         
@@ -530,10 +538,12 @@ Requested to: <b>{{ $mail_data['details']->request_to }}</b></span></p><p class=
     </div>
         
             <div style="Margin-left: 20px;Margin-right: 20px;">
-      <div class="btn btn--flat btn--large" style="Margin-bottom: 20px;text-align: left;">
-        <![if !mso]><a style="border-radius: 4px;display: inline-block;font-size: 14px;font-weight: bold;line-height: 24px;padding: 12px 24px;text-align: center;text-decoration: none !important;transition: opacity 0.1s ease-in;color: #ffffff !important;background-color: #6b7489;font-family: Lato, Tahoma, sans-serif;" href="{{ route('showROF', ['rof_id' => $mail_data['details']->rof_id]) }}">View Request Order</a><![endif]>
-      <!--[if mso]><p style="line-height:0;margin:0;">&nbsp;</p><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="http://test.com" style="width:175px" arcsize="9%" fillcolor="#6B7489" stroke="f"><v:textbox style="mso-fit-shape-to-text:t" inset="0px,11px,0px,11px"><center style="font-size:14px;line-height:24px;color:#FFFFFF;font-family:Lato,Tahoma,sans-serif;font-weight:bold;mso-line-height-rule:exactly;mso-text-raise:4px">View Request Order</center></v:textbox></v:roundrect><![endif]--></div>
-    </div>
+      {{-- <div class="btn btn--flat btn--large" style="Margin-bottom: 20px;text-align: left;">
+        <![if !mso]><a style="border-radius: 4px;display: inline-block;font-size: 14px;font-weight: bold;line-height: 24px;padding: 12px 24px;text-align: center;text-decoration: none !important;transition: opacity 0.1s ease-in;color: #ffffff !important;background-color: #6b7489;font-family: Lato, Tahoma, sans-serif;" href="{{ route('showROF', $mail_data['details']->rof_id) }}">View Request Order</a><![endif]></div> --}}
+        <div class="btn btn--flat btn--large" style="Margin-bottom: 20px;text-align: left;">
+          <![if !mso]><a style="border-radius: 4px;display: inline-block;font-size: 14px;font-weight: bold;line-height: 24px;padding: 12px 24px;text-align: center;text-decoration: none !important;transition: opacity 0.1s ease-in;color: #ffffff !important;background-color: #6b7489;font-family: Lato, Tahoma, sans-serif;" href="http://127.0.0.1:8000/rof/{{ $mail_data['details']->rof_id }}">View Request Order</a><![endif]></div>
+  
+      </div>
         
             <div style="Margin-left: 20px;Margin-right: 20px;">
       <div style="mso-line-height-rule: exactly;line-height: 20px;font-size: 1px;">&nbsp;</div>
@@ -541,7 +551,7 @@ Requested to: <b>{{ $mail_data['details']->request_to }}</b></span></p><p class=
         
             <div style="Margin-left: 20px;Margin-right: 20px;Margin-bottom: 24px;">
       <div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;">
-        <p class="size-17" style="Margin-top: 0;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17">PDF file is attached for reference.</p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17">Thank you.</p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><strong><em>Celcom Timur Sabah IT Dept.</em></strong></p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><em>This is an auto-generated email. Please do not reply.</em></p>
+        <p class="size-17" style="Margin-top: 0;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17">PDF file was attached for reference.</p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17">Thank you.</p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><strong><em>Celcom Timur Sabah IT Dept.</em></strong></p><p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><em>This is an auto-generated email. Please do not reply.</em></p>
       </div>
     </div>
         

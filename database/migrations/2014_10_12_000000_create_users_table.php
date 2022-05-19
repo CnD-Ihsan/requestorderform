@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps();
 
             //Added columns for edge cases
-            $table->string('dept'); //Department
+            $table->string('user_group'); //Department or Contractor
             $table->string('isp')->nullable();
             $table->string('user_type'); 
         });

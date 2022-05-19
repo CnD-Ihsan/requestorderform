@@ -18,6 +18,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    protected $contractors = ['Maribumi','Apex', 'Fiberhome', 'Redaway'];
 
     protected $fillable = [
         'name',
@@ -58,7 +59,7 @@ class User extends Authenticatable
     }
 
     public function getContractorList(){
-        $contractors = ['Maribumi','Apex', 'Fiberhome', 'Redaway'];
+        $contractors = $this->contractors;
         return $contractors;   
     }
 }

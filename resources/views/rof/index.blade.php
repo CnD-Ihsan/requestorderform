@@ -1,14 +1,13 @@
 
 <title>Request Order Form</title>
 @include('layouts.app')
-@if(session()->has('message'))
-    <div class="alert alert-success">
-        <?php
-            $message = session()->get('message');
-            echo "<script> alert('$message'); </script>";
-            session(['message' => '']);
-        ?>
-    </div>
+{{-- below: tu strip hijau pndai2 la experiment --}}
+@if(session()->has('message')) 
+    <?php
+        $message = session()->get('message');
+        echo "<script> alert('$message'); </script>";
+        session(['message' => '']);
+    ?>
 @endif
 
 <?php
@@ -85,7 +84,7 @@ td, th {
                     Approval Status
                 </label>
                 <select id="status_filter" name="status_filter" class="column_filter {{ $inputStyling }}">
-                    <option selected value=""></option>  
+                    <option value=""></option>  
                     <option value="Approved">Approved</option>
                     <option value="Pending">Pending</option>
                     <option value="Rejected">Rejected</option>
@@ -97,7 +96,7 @@ td, th {
                 <label>
                     Request Order Type
                 </label>
-                <input type="text" placeholder="Others" list="order_type" id="order_type_filter" name="order_type_filter" class="column_filter  {{ $inputStyling }}" required/></input>
+                <input type="text" placeholder="Others (Select or type)" list="order_type" id="order_type_filter" name="order_type_filter" class="column_filter  {{ $inputStyling }}" required/></input>
                 <datalist id="order_type">
                     <option selected value=""></option>  
                     <option value="New Project">New Project</option>
@@ -112,7 +111,8 @@ td, th {
                     Order Content
                 </label>
                 <select id="order_content_filter" name="order_content_filter" class="column_filter {{ $inputStyling }}">
-                    <option selected value="blank"> 
+                    <option disabled selected value="blank">
+                        Search order content 
                     </option>  
                     @foreach($categories as $category)
 
@@ -137,7 +137,7 @@ td, th {
                 <label>
                     From
                 </label>
-                <input autocomplete="off" class="datepicker {{ $inputStyling }}" type="text" id="from_filter" name="from_filter"></input>
+                <input autocomplete="off" class="datepicker {{ $inputStyling }}" type="text" id="from_filter" name="from_filter" placeholder="Filter date from"></input>
             </div>
         </div>
         <div class="col-sm-2">
@@ -145,7 +145,7 @@ td, th {
                 <label>
                     To
                 </label>
-                <input autocomplete="off" class="datepicker  {{ $inputStyling }}" type="text" id="to_filter" name="to_filter"></input>
+                <input autocomplete="off" class="datepicker  {{ $inputStyling }}" type="text" id="to_filter" name="to_filter" placeholder="Filter date until"></input>
             </div>
         </div>
                 <button type="button" class="btn btn-dark mb-3" style="width:8%; margin: auto;" onclick="clearFilter()" aria-label="Clear Filter" data-toggle="tooltip" data-placement="bottom" title="Clear Filter">Clear Filter</button>
@@ -163,7 +163,7 @@ td, th {
                         <th>Request Order Type</th>
                         <th>Date</th>
                         <th>Status</th>
-                        <th>Action </th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -175,11 +175,12 @@ td, th {
 </body>
 </html>
 
-<!-- Javascript -->
+<!-- Javascript Jquery/Datatable/Bootstrap/SweetAlert -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />
@@ -220,6 +221,15 @@ var minDate, maxDate, table;
 
     $(document).ready( function () {
 
+        $('#rof-table thead tr')
+            .clone(true)
+            .addClass('filters')
+            .appendTo('#rof-table thead');
+
+        // var table = $('#rof-table').DataTable({
+            
+        // });
+
         load_table();
 
         $('#from_filter').datepicker({
@@ -232,6 +242,7 @@ var minDate, maxDate, table;
                 moreFilter();
             }
         });
+
         $('#to_filter').datepicker({
             dateFormat: 'yy-mm-dd',
             onSelect: function (selected) {
@@ -245,6 +256,60 @@ var minDate, maxDate, table;
 
         function load_table(fromDate = '', toDate = '', content = ''){
             table = $('#rof-table').DataTable({
+            order: [ 4, 'desc' ],
+            orderCellsTop: true,
+            fixedHeader: true,
+            initComplete: function () {
+                var api = this.api();
+    
+                // For each column
+                api
+                    .columns()
+                    .eq(0)
+                    .each(function (colIdx) {
+                        // Set the header cell to contain the input element
+                        var cell = $('.filters th').eq(
+                            $(api.column(colIdx).header()).index()
+                        );
+                        var title = $(cell).text();
+                        if(title != "Action"){
+                            $(cell).html('<input type="text" placeholder="' + title + '" />');
+                        }
+                        else{
+                            $(cell).html('<input type="text" disabled/>');
+                        }
+                        // On every keypress in this input
+                        $(
+                            'input',
+                            $('.filters th').eq($(api.column(colIdx).header()).index())
+                        )
+                            .off('keyup change')
+                            .on('keyup change', function (e) {
+                                e.stopPropagation();
+    
+                                // Get the search value
+                                $(this).attr('title', $(this).val());
+                                var regexr = '({search})'; //$(this).parents('th').find('select').val();
+    
+                                var cursorPosition = this.selectionStart;
+                                // Search the column for that value
+                                api
+                                    .column(colIdx)
+                                    .search(
+                                        this.value != ''
+                                            ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                            : '',
+                                        this.value != '',
+                                        this.value == ''
+                                    )
+                                    .draw();
+    
+                                $(this)
+                                    .focus()[0]
+                                    .setSelectionRange(cursorPosition, cursorPosition);
+                            });
+                    });
+            }, //end of initComplete
             processing: true,
             serverSide: true,
             ajax: {
@@ -258,7 +323,7 @@ var minDate, maxDate, table;
             columns: [
                 {data: 'requested_by', name: 'requested_by'},
                 {data: 'form_ref_no', name: 'form_ref_no'},
-                {data: 'user.dept', name: 'user.dept'},
+                {data: 'user.user_group', name: 'user.user_group'},
                 {data: 'order_type', name: 'order_type'},
                 {data: 'date', name: 'date'},
                 {data: 'status', name: 'status'},
@@ -268,6 +333,8 @@ var minDate, maxDate, table;
                 emptyTable : "No order form request found."
             }
             });
+
+            table.order(4, 'desc');
             
             if (user == 'User'){
                 table.columns(0).visible(false);

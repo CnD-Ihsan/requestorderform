@@ -9,20 +9,24 @@ use Illuminate\Queue\SerializesModels;
 use App\HTTP\Controllers\ROFController;
 use Auth;
 use PDF;
+use Illuminate\Support\Facades\Storage;
 
 class NotificationEmail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $data;
+    protected $data;
+    protected $pdf;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct($data, $pdf)
     {
+        //get data from sendEmail function in ROFController
         $this->data = $data;
+        $this->pdf = $pdf;
     }
 
     /**
@@ -32,14 +36,26 @@ class NotificationEmail extends Mailable
      */
     public function build()
     {
-        $pdf = $this->data['pdf'];
+        $pdf = $this->pdf;
         $rof_details = $this->data['details'];
+        $user = $this->data['user'];
+        $subject = "[New] ROF Application";
 
-        //make this dynamic
-        //get data from sendEmail function in ROFController
-        return $this->from(Auth::user()->email, Auth::user()->name)
-                    ->subject('New ROF Request')
-                    ->attachData($pdf->output(), 'test.pdf')
+        if($rof_details['status'] == "Rejected"){
+            $subject = "[Rejected] ROF Application";
+        }
+
+        if($rof_details['status'] == "Approved"){
+            return $this->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
+                        ->subject($subject)
+                        ->cc($user['email'])
+                        ->attachData($pdf->output(), $rof_details['form_ref_no'].'.pdf')
+                        ->view('rof.mail.notification-email', ['mail_data' => $this->data]);
+        }
+        
+        return $this->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
+                    ->subject($subject)
+                    ->attachData($pdf->output(), $rof_details['form_ref_no'].'.pdf')
                     ->view('rof.mail.notification-email', ['mail_data' => $this->data]);
     }
 }

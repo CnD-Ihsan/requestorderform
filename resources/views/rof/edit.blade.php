@@ -67,7 +67,7 @@ th {
                             </tr>
                             <tr>
                                 <td><x-label style="font-weight: bold;" for="department" :value="__('Department')" /></td>
-                                <td colspan="3"><x-label for="department" :value="': '.Auth::user()->dept" /></td>
+                                <td colspan="3"><x-label for="department" :value="': '.Auth::user()->user_group" /></td>
            
                                 <td><x-label style="font-weight: bold;" for="date" :value="__('Request Date ')" /></td>                                
                                 <td><x-label :value="': '.$details->date" /></td>

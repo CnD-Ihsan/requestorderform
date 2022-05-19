@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Auth;
@@ -15,8 +14,7 @@ use DB;
 use Alert;
 use Mail;
 use App\Mail\NotificationEmail;
-
-//$url=route('indexROF');
+use App\Jobs\MailJob;
 
 class ROFController extends Controller
 {
@@ -98,6 +96,7 @@ class ROFController extends Controller
         
         $labelCounter = [0,0,0];
         $item_no = 0;
+
         ROF_Item::where('form_ref_no', '=',  $request->form_ref_no)->delete();
 
         for($i = 1; $i <= $request->indexNum; $i++){
@@ -132,8 +131,12 @@ class ROFController extends Controller
                     'checked_at'=>date("Y-m-d H:i:s"),
                     'status' => 'Approved',
                 ]);
-                $this->sendEmail($rof_id);
-                return redirect()->back()->with('message','Request Order succesfully approved!');
+
+                $rof = ROF::find($rof_id);
+                $mail_to = User::where('user_group', '=', $rof['request_to'])->pluck('email');
+                
+                $this->sendEmail($rof_id, $mail_to);
+                return redirect()->route('indexROF')->with('message','Request Order succesfully approved!');
         }
     }
 
@@ -147,7 +150,8 @@ class ROFController extends Controller
                     'status'=>'Rejected',
                     'remarks'=> $request->remarks,
                 ]);
-                $this->sendEmail($rof->rof_id);
+                $mail_to = ROF::find($rof_id)->user->email;
+                $this->sendEmail($rof_id, $mail_to);
                 return redirect()->back()->with('message','Request Order rejected!');
             }
     }
@@ -202,7 +206,7 @@ class ROFController extends Controller
                 'category' => $request->$remarks,
             ]);
         }
-        $this->sendEmail($rof->rof_id);
+        $this->sendEmail($rof->rof_id, User::where('user_type', 'HOD')->pluck('email')->all());
         return redirect('rof/index')->with('message','Request Order successfully added.');
     }
 
@@ -242,13 +246,13 @@ class ROFController extends Controller
             $maxDate = date($request->maxDate);
             $content = $request->searchContent;
 
-            $rofs = ROF::with('user', 'rofItems');
+            $rofs = ROF::with('user')->orderBy('date', 'desc');
             
             //filter table to only show forms relevant to user type
             if(Auth::user()->user_type == 'User'){
                 $rofs = $rofs->where('requested_by', Auth::user()->name);
             } else if(Auth::user()->user_type == 'Contractor'){
-                $rofs = $rofs->where('request_to', Auth::user()->dept)->where('status', 'Approved');
+                $rofs = $rofs->where('request_to', Auth::user()->user_group)->where('status', 'Approved');
             }
 
             //daterange filter
@@ -285,13 +289,14 @@ class ROFController extends Controller
         return redirect()->route('indexROF');
     }
     
-    public function sendEmail($rof_id){
+    //this function is triggered everytime a new ROF is created or approved. $mail_to dependent on context.
+    public function sendEmail($rof_id, $mail_to){
         $details = ROF::find($rof_id);
-        $pdf = $this->toPDF($rof_id);
+        $user = Auth::user();
+        $data = compact('details', 'mail_to', 'rof_id', 'user');
 
-        $data = compact("pdf", "details");
-
-        Mail::to('ihsanuddin@ctsabah.com.my')-> send(new NotificationEmail($data));
+        //passes the function to a job to be run in the background
+        MailJob::dispatch($data);
     }
 
 }

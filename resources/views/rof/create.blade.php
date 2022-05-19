@@ -1,12 +1,11 @@
 <title>Request Order Form</title>
 @include('layouts.app')
 <?php
-//use App\Http\Controllers\ROFController;
 use App\Models\User;
 
 $jsonCategory = $categories->toJson();
 
-$date=date("m/d"); //this date is only used as Form Ref No builder
+$date=date("m/d"); //this date is used for Request Order Form Ref No builder
 $counter = $daily_counter['counter'];
 $counter++;
 
@@ -16,7 +15,6 @@ $inputStyling = "mt-1 form-control rounded-md shadow-sm border-gray-300 focus:bo
 
 <style>
 input:disabled {
-  /* background: #dddddd; */
   border: 0;
 }
 
@@ -61,9 +59,9 @@ th {
                             </tr>
                             <tr>
                                 <td><x-label style="font-weight: bold;" for="department" :value="__('Department')" /></td>
-                                <td colspan="3"><x-label for="department" :value="': '.Auth::user()->dept" /></td>
+                                <td colspan="3"><x-label for="department" :value="': '.Auth::user()->user_group" /></td>
                                 {{-- Below is the actual value that will be sent --}}
-                                <x-input id="department" class="block mt-1 w-40" type="hidden" name="department" value='{{ Auth::user()->dept }}' required autofocus />
+                                <x-input id="department" class="block mt-1 w-40" type="hidden" name="department" value='{{ Auth::user()->user_group }}' required autofocus />
 
                                 <td><x-label style="font-weight: bold;" for="date" :value="__('Request Date ')" /></td>
                                 <x-input hidden type="text" id="date" name="date" value="{{ date('Y-m-d') }}"/>
@@ -117,17 +115,18 @@ th {
 
                             <tr><td></td></tr>
 
+                            {{-- Initialization of some ROF attributes --}}
                             <x-input id="checked_at" hidden type="text" name="checked_at" value="" autofocus />
                             <x-input id="checked_by" hidden type="text" name="checked_by" value="" autofocus />
                             <x-input id="received_by" hidden type="text" name="received_by" value="" autofocus />
                             <x-input id="received_at" hidden type="text" name="received_at" value="" autofocus />
+
                         </table>
                         
                         {{-------------------------------------------------------------}}
                         <!--Request Order Items-->
                         <div><hr style="margin-top:3%; margin-bottom:3%;"></div>
                         <div style="width:85%; margin:auto;">
-                            {{-- <x-label for="rofi" style="font-weight: bold;" :value="__('Request Order Items:')" /> --}}
                             <div class="my-3"><h5><b>Request Order Item<b></h5></div>
                             <table id="rofi">
                                 <thead>
@@ -139,9 +138,9 @@ th {
                                 </thead>
                                 <tbody id="appendRow" >
                                 <tr>
-                                    <td><input for="rofi" id="link1" class="{{ $inputStyling }}" type="text" name="link1"></input></td>
+                                    <td><input for="rofi" id="link1" class="{{ $inputStyling }}" required type="text" name="link1"></input></td>
                                     <td>
-                                        <select name='remarks1' id='remarks1' :value="old('remarks1')" class="{{ $inputStyling }}">
+                                        <select name='remarks1' id='remarks1' :value="old('remarks1')" required class="{{ $inputStyling }}">
                                             <option selected value="blank"> 
                                             </option>  
                                             @foreach($categories as $category)
@@ -161,7 +160,6 @@ th {
                                     </td>
                                     <td><input disabled type="button" value="X" onclick="deleteRow(this)"></td>
                                 </tr>
-                                {{-- <tr style='visibility:collapse'></tr> --}}
                                 <x-input id="indexNum" hidden type="text" name="indexNum" value="1" autofocus />
                                 </tbody>
                             </table>
@@ -169,7 +167,6 @@ th {
                             <button class="m-2 btn btn-primary" type="button" id="dynamic-ar">+ Link</button>
                             <button class="m-2 float-end btn btn-success" type="submit">Submit</button>
                             <button class="my-2 float-end btn btn-secondary" type="button" onclick="history.back()">Back</button>  
-                            {{-- <x-button class="mt-1">Add Link</x-button> --}}
                         </div>
                     </form><br><br>
                 </div>
@@ -208,22 +205,11 @@ th {
     jsonCategory.forEach(getCategories);
   
     //Below function adds new row of fields.
-    // $("#dynamic-ar").click(function () {
-    //     i++;
-    //     formAddItem = '<tr><td><input id="link' + i + '" class="mt-1 w-40" type="text" name="link' 
-    //                     + i + '" autofocus></td><td><select name="remarks' + i + '" id="remarks' 
-    //                     + i + '" class="form-control rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full">'
-    //                     + '<option selected value ="blank"></option>' + formItemCategories + '</select></td><td><input type="button" value="X" onclick="deleteRow(this)"></td></tr>'; 
-                        
-    //     var targetDiv = document.getElementById('rofi');
-    //     document.getElementById('indexNum').value = i;
-    //     $("#appendRow").append(formAddItem);
-    // });
     $("#dynamic-ar").click(function addRow () {
         i++;
-        formAddItem = '<tr><td><input id="link' + i + '" class="{{ $inputStyling }}" type="text" name="link' 
+        formAddItem = '<tr><td><input id="link' + i + '" class="{{ $inputStyling }}" type="text" required name="link' 
                         + i + '" autofocus></td><td><select name="remarks' + i + '" id="remarks' 
-                        + i + '" class="{{ $inputStyling }}">'
+                        + i + '" required class="{{ $inputStyling }}">'
                         + '<option selected value ="blank"></option>' + formItemCategories + '</select></td><td><input type="button" value="X" onclick="deleteRow(this)"></td></tr>'; 
                         
         var targetDiv = document.getElementById('rofi');
