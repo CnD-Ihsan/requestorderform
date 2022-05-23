@@ -72,3 +72,27 @@ function rejectROF(rofID) {
         }
     });  
 }
+
+function basicToast(actionType) {
+    if(actionType == "create")
+    swal({
+        text: "Receive this order?",
+        icon: "info",
+        buttons: true,
+    })
+    .then((approve) => {
+        if (approve) {
+            var url = '/rof/receive/rofID';
+            url = url.replace('rofID', rofID);
+            window.location.href=url;
+        } else {
+            return false;
+        }
+    });  
+    else if (actionType == "approve"){
+
+    }
+    else if (actionType == "reject"){
+        
+    }
+}

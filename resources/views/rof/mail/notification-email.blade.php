@@ -520,7 +520,14 @@ div.preheader {
         
             <div style="Margin-left: 20px;Margin-right: 20px;">
       <div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;">
-        <h1 class="size-24" style="Margin-top: 0;Margin-bottom: 0;font-style: normal;font-weight: normal;color: #b8bdc9;font-size: 20px;line-height: 28px;text-align: left;" lang="x-size-24"><font color="#8690a8">A {{ $mail_data['details']->status == 'Rejected' ? '' : 'new '  }}Request Order Form has been {{ $mail_data['details']->status == 'Rejected' ? 'rejected ' : 'applied'  }}.</font></h1>
+        <h1 class="size-24" style="Margin-top: 0;Margin-bottom: 0;font-style: normal;font-weight: normal;color: #b8bdc9;font-size: 20px;line-height: 28px;text-align: left;" lang="x-size-24"><font color="#8690a8">A {{ $mail_data['action'] == 'create' ? 'new' : ''  }} Request Order Form {{ ($mail_data['action'] == 'edit' || $mail_data['action'] == 'reject') ? 'was ' : 'has been '  }} 
+          {{ 
+            $mail_data['action'] == 'create'    ?  'created'   : 
+            ($mail_data['action'] == 'edit'     ?  'edited'    : 
+            ($mail_data['action'] == 'approve'  ?  'approved'  :             
+                                                  'rejected')) ;
+          }}.</font>
+        </h1>
         <p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><span style="text-decoration: inherit;">Details as below</span></p>
         <p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><span style="text-decoration: inherit;">Ref. No: <b>{{ $mail_data['details']->form_ref_no }}</b></span></p>
         <p class="size-17" style="Margin-top: 20px;Margin-bottom: 0;font-size: 17px;line-height: 26px;" lang="x-size-17"><span style="text-decoration: inherit;">Requested by: <b>{{ $mail_data['details']->requested_by }}</b><br/>

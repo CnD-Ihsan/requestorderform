@@ -178,7 +178,7 @@
                             </tr>
                             <tr>
                                 <td class="no-top-padding"><div class="font-weight-bold">Date </div></td>
-                                <td class="no-top-padding"><div>: {{ date("Y-m-d",strtotime($details['checked_at'])) }} </div></td>
+                                <td class="no-top-padding"><div>: {{ $details['checked_at'] ? date("Y-m-d",strtotime($details['checked_at'])) : '' }} </div></td>
                                 <td class="no-top-padding"><div class="font-weight-bold">Date</div></td>
                                 <td class="no-top-padding"><div>: </div></td>
                             </tr>

@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 
-@if(session()->has('message'))
-    <div class="alert alert-success">
-        <?php
-            $message = session()->get('message');
-            echo "
-                <script> 
-                    alert('$message'); 
-                </script>
-            ";
-        ?>
-    </div>
+@if(session()->has('message')) 
+    <?php
+        $message = session()->get('message');
+
+        if(str_contains($message, 'rejected')){
+            toast(session()->get('message'),'error','top-right');
+        }
+        else{
+            toast(session()->get('message'),'success','top-right');
+        }
+        
+        // echo "<script> alert('$message'); </script>";
+        session(['message' => '']);
+    ?>
 @endif
 
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -95,7 +98,7 @@
                         </tr>
                         <tr class="">
                             <td class=""><div class="font-weight-bold">Appointed to</div></td>
-                            <td colspan="3" class=""><div class=""><h5>: <u>{{ $details['request_to'] }}</u></h5> </div></td>
+                            <td colspan="3" class=""><div class="">: {{ $details['request_to'] }}</div></td>
                         </tr>
                     </tbody>
                 </table>
@@ -198,7 +201,7 @@
                         <a href="{{ route('downloadPDF', [$details['rof_id']]); }}" target="_blank" class="btn btn-warning">Save as PDF</a>
 
                         @if (auth()->user()->user_type == "User" && $details['status'] == "Pending")
-                            <a id="edit_{{ $details->rof_id }}" href="{{ route('editROF', [$details['rof_id']]); }}" class="btn btn-warning m-1">Edit Details</a>
+                            <a id="edit_{{ $details->rof_id }}" href="{{ route('editROF', [$details['rof_id']]); }}" class="btn btn-outline-primary m-1">Edit Details</a>
                         @endif
 
                         <a type="button" href="{{ route('indexROF') }}" class="btn btn-secondary">Back</a>

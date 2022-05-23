@@ -68,7 +68,7 @@ class ROFController extends Controller
     }
 
     public function edit($rof_id){
-        $details = ROF::with('rofItems')->find($rof_id);
+        $details = ROF::with('rofItems')->findOrFail($rof_id);
         $contractors = User::first()->getContractorList();
 
         if(Auth::user()->name == $details->requested_by){
@@ -119,7 +119,8 @@ class ROFController extends Controller
             ]);
 
         }
-        return redirect()->back()->with('message','Request Order details updated.');
+        $this->sendEmail($rof_id, User::where('user_type', 'HOD')->pluck('email')->all());
+        return redirect()->route('showROF',$rof_id)->with('message','Request Order details updated.');
     }
 
     public function approve_rof($rof_id){
@@ -246,7 +247,7 @@ class ROFController extends Controller
             $maxDate = date($request->maxDate);
             $content = $request->searchContent;
 
-            $rofs = ROF::with('user')->orderBy('date', 'desc');
+            $rofs = ROF::with('user'); //->orderBy('date', 'desc')
             
             //filter table to only show forms relevant to user type
             if(Auth::user()->user_type == 'User'){
@@ -289,11 +290,28 @@ class ROFController extends Controller
         return redirect()->route('indexROF');
     }
     
-    //this function is triggered everytime a new ROF is created or approved. $mail_to dependent on context.
+    //this function is triggered everytime a new ROF is created, edited, approved or rejected. $mail_to dependent on context.
     public function sendEmail($rof_id, $mail_to){
+        $route = request()->route()->getName();
+        $action = '';
+
+        if($route == 'saveROF') {
+            $action = 'create';
+        }
+        elseif($route == 'updateROF'){
+            $action = 'edit';
+        }
+        elseif($route == 'approveROF'){
+            $action = 'approve';
+        }
+        elseif($route == 'rejectROF'){
+            $action = 'reject';
+        }
+        //dd($action);
+
         $details = ROF::find($rof_id);
         $user = Auth::user();
-        $data = compact('details', 'mail_to', 'rof_id', 'user');
+        $data = compact('details', 'mail_to', 'rof_id', 'user', 'action');
 
         //passes the function to a job to be run in the background
         MailJob::dispatch($data);

@@ -5,7 +5,15 @@
 @if(session()->has('message')) 
     <?php
         $message = session()->get('message');
-        echo "<script> alert('$message'); </script>";
+
+        if(str_contains($message, 'rejected')){
+            toast(session()->get('message'),'error','top-right');
+        }
+        else{
+            toast(session()->get('message'),'success','top-right');
+        }
+        
+        // echo "<script> alert('$message'); </script>";
         session(['message' => '']);
     ?>
 @endif
@@ -256,7 +264,7 @@ var minDate, maxDate, table;
 
         function load_table(fromDate = '', toDate = '', content = ''){
             table = $('#rof-table').DataTable({
-            order: [ 4, 'desc' ],
+            order: [4, 'desc'],
             orderCellsTop: true,
             fixedHeader: true,
             initComplete: function () {
@@ -327,14 +335,14 @@ var minDate, maxDate, table;
                 {data: 'order_type', name: 'order_type'},
                 {data: 'date', name: 'date'},
                 {data: 'status', name: 'status'},
-                {data: 'action', name: 'action', orderable: false}
+                {data: 'action', name: 'action', orderable: false, searchable:false}
             ],
             language : {
                 emptyTable : "No order form request found."
             }
             });
 
-            table.order(4, 'desc');
+            //table.order(4, 'desc');
             
             if (user == 'User'){
                 table.columns(0).visible(false);

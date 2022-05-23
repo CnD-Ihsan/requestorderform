@@ -86,7 +86,7 @@ $inputStyling = "rounded-md shadow-sm border-gray-300 focus:border-indigo-300 fo
                     <div class="mt-4">
                         <x-label for="isp" :value="__('ISP')" />
                         <br>
-                        <select required name="isp" id="isp" class="block mt-1 w-full">
+                        <select name="isp" id="isp" class="block mt-1 w-full">
                             <option selected value=""></option>
                             <option value="Celcom">Celcom</option>
                             <option value="Maxis">Maxis</option>

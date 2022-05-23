@@ -39,13 +39,17 @@ class NotificationEmail extends Mailable
         $pdf = $this->pdf;
         $rof_details = $this->data['details'];
         $user = $this->data['user'];
+        $action = $this->data['action'];
         $subject = "[New] ROF Application";
-
-        if($rof_details['status'] == "Rejected"){
+        
+        if ($action == "reject"){
             $subject = "[Rejected] ROF Application";
         }
+        elseif ($action == "edit"){
+            $subject = "[Edited] ROF Application";
+        }
 
-        if($rof_details['status'] == "Approved"){
+        if($rof_details['status'] == "Approved"){    
             return $this->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
                         ->subject($subject)
                         ->cc($user['email'])

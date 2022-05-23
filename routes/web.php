@@ -40,17 +40,21 @@ Route::group(([
     'prefix' => 'rof',
     'controller' => ROFController::class,
 ]), function(){
+    //When reading the route name, be sure to understand the difference between Page Route and Function Route
     //Index Page Route
     Route::get('/index','index')->name('indexROF');
 
     //Create Page Route
     Route::get('/create', 'create')->name('createROF');
 
-    //Datatable Builder Function Route
-    Route::get('/datatable', 'datatableBuilder')->name('datatableROF');
+    //Edit Page Route
+    Route::get('/edit/{rof_id}', 'edit')->name('editROF');
 
     //Show Page Route
     Route::get('/{rof_id}', 'show')->name('showROF');
+    
+    //Datatable Builder Function Route
+    Route::get('/datatable', 'datatableBuilder')->name('datatableROF');
 
     //Store Function Route
     Route::post('/create','store')->name('saveROF');
@@ -58,10 +62,7 @@ Route::group(([
     //Update Function Route
     Route::post('/update/{rof_id}','update')->name('updateROF');
 
-    //Edit Page Route
-    Route::get('/edit/{rof_id}', 'edit')->name('editROF');
-
-    //ROF Status Mutator Route
+    //ROF Status Mutators Function Route
     Route::get('/approve/{rof_id}','approve_rof')->name('approveROF');
     Route::get('/reject/{rof_id}', 'reject_rof')->name('rejectROF');
     Route::get('/receive/{rof_id}', 'receive_rof')->name('receiveROF');

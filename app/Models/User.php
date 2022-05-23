@@ -20,10 +20,14 @@ class User extends Authenticatable
      */
     protected $contractors = ['Maribumi','Apex', 'Fiberhome', 'Redaway'];
 
+    protected $attributes = [
+        'user_group'=>'',
+    ];
+
     protected $fillable = [
         'name',
         'email',
-        'dept',
+        'user_group',
         'password',
         'user_type',
         'isp',
@@ -54,8 +58,8 @@ class User extends Authenticatable
         return $this->hasMany(ROF::class);
     }
 
-    public function getDept(){
-        return $this->dept;
+    public function getUserGroup(){
+        return $this->user_group;
     }
 
     public function getContractorList(){
